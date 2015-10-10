@@ -1,0 +1,3 @@
+from ReplicationStrategy import ReplicationStrategy
+
+class DruidReplicationStrategy(ReplicationStrategy):
