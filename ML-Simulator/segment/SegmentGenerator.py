@@ -2,14 +2,14 @@
 from Segment import Segment
 
 class SegmentGenerator(object):
-	def __init__(self,list,distribution):
-		self.size = 0
-		self.distribution = distribution
-		self.list = []
+	
 		
-	def populate(self, size, distribution):
-		self.size = self.size + size
-		self.list.append(DataBlock(i, i, i+1, 1)) # need to modify
+	def populate(self, distribution,size):
+		list = []
+		for i in range(size):
+			self.list.append(Segment( 0, i+1, i)) # need to modify
+		return list
+		
 		
 	def printAll(self):
 	    for data in self.list:

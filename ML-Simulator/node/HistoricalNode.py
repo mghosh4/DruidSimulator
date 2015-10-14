@@ -15,7 +15,7 @@ class HistoricalNode(Node):
 	def queue_size(self):
 		return len(self.queue)
 		
-	def lookup(value):
+	def lookup(self, value):
 		for segment in self.queue
 			if segment.value = value
 				return True
