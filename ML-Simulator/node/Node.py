@@ -7,3 +7,5 @@ class Node(object):
 	
 	def show(self):
 		print "Node type: ", self.nodetype
+	
+	

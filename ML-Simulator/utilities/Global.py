@@ -1,8 +1,8 @@
 class Utils(object):
 
 	#node type:
-	BROKER = 1
-	COORDINATOR = 2
-	HISTORICAL = 3
-	REALTIME = 4
+	BROKER = "Broker"
+	COORDINATOR = "Coordnator"
+	HISTORICAL = "Historical"
+	REALTIME = "Realtime"
 	
