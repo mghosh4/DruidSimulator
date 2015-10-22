@@ -1,3 +1,0 @@
-from PlacementStrategy import PlacementStrategy
-
-class CostBasedPlacementStrategy(PlacementStrategy):

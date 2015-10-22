@@ -1,18 +1,12 @@
+import os, sys
+sys.path.append(os.path.abspath('../placementstrategy'))
+from PlacementFactory import PlacementFactory
+
 from Node import Node
 
 class Coordinator(Node):
 	
-	pool = []
-	
 	@staticmethod
-	def add(self, list, numHistorical):
-		HistNodeList = []
-		for x in range (1, numHistorical)
-			HistNodeList.append(HistoricalNode( "Historical", x))
-		for entry in list
-			pool.append(entry)
-		placement_map = PlacementStrategy(numHistorical, pool)
-		
-			
-		
-		
+	def placeSegments(segmentlist, historicalnodelist, placementstrategy):
+        strategy = PlacementFactory.createPlacementStrategy(placementstrategy)
+        strategy.placeSegments(segmentlist, historicalNodelist)
