@@ -1,33 +1,27 @@
-from Scheduler import Scheduler
-from SchedulerRandom import RandomScheduler
-from Query import Comparitor
-from Placement import Placement
-from PlacementMaxMatching import MatchingPlacement
-from BlockLoader import BlockLoader
-from BlockLoaderCostBased import BlockLoaderCostBased
+import os,sys
+import time
+sys.path.append(os.path.abspath('query'))
+sys.path.append(os.path.abspath('distributiongenerators'))
 
-NUM_NODE = 10
-NUM_SLOT = 1
-NUM_QUERY = 20
-NUM_DATA = 1000
-NUM_USED_NODE_PER_QUERY=20
-SORTER = Comparitor.SIZE
-SEED = 1
-REPLICA_FACTOR = 3
+from Query import Query
+from QueryGenerator import QueryGenerator
+from UniformDistributionGenerator import UniformDistributionGenerator
+from ZipfDistributionGenerator import ZipfDistributionGenerator
+from LatestDistributionGenerator import LatestDistributionGenerator
 
-placement = Placement() #Druid way to assign query
-matchingPlacement = MatchingPlacement()
-LoadStrategy = BlockLoader()
-
-scheduler1 = Scheduler(NUM_NODE, NUM_SLOT, NUM_QUERY, NUM_DATA,NUM_USED_NODE_PER_QUERY, Comparitor.SIZE, REPLICA_FACTOR, placement, LoadStrategy)
-print "Hello"
-metric = scheduler1.schedule()
-scheduler1.printQueryList()
-print "schedule: size\tplacement:random\t", metric
-
-scheduler2 = Scheduler(NUM_NODE, NUM_SLOT, NUM_QUERY, NUM_DATA,NUM_USED_NODE_PER_QUERY,Comparitor.SIZE, REPLICA_FACTOR, matchingPlacement,LoadStrategy)
-metric = scheduler2.schedule()
-scheduler2.printQueryList()
-print "schedule: size\tplacement:maxmatching\t", metric
+uniformList = QueryGenerator.generateQueries(10, 5, 3, UniformDistributionGenerator());
+print "Uniform"
+for query in uniformList:
+	query.info()
 
 
+zipfList = QueryGenerator.generateQueries(10, 5, 3, ZipfDistributionGenerator());
+print "Zipfian"
+for query in zipfList:
+	query.info()
+
+
+latestList = QueryGenerator.generateQueries(10, 5, 3, LatestDistributionGenerator());
+print "Latest"
+for query in latestList:
+	query.info()
