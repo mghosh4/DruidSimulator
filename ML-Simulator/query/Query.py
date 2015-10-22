@@ -3,7 +3,7 @@ class Query(object):
 		self.segmentList = list()
 		
 	def info(self):
-		print ', '.join(str(x) for x in self.segmentList)
+		return ', '.join(str(x) for x in self.segmentList)
 
 	def add(self, segment):
 		self.segmentList.append(segment)

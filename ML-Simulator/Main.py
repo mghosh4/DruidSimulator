@@ -3,11 +3,14 @@ import time
 sys.path.append(os.path.abspath('query'))
 sys.path.append(os.path.abspath('distribution'))
 sys.path.append(os.path.abspath('config'))
+sys.path.append(os.path.abspath('node'))
 
 from ParseConfig import ParseConfig
-from Query import Query
 from QueryGenerator import QueryGenerator
-from DistributionFactory import *
+from DistributionFactory import DistributionFactory
+from HistoricalNode import HistoricalNode
+from RealTimeNode import RealTimeNode
+from Coordinator import Coordinator
 
 def testDistributionCode():
 	uniformList = QueryGenerator.generateQueries(10, 5, 3, Uniform());
@@ -41,14 +44,15 @@ def getConfig(configFile):
 	configFilePath = configFile
 	return ParseConfig(configFilePath)
 	
-def setupCluster(segmentCount, placementstrategy):
-	realtimeNode = RealTimeNode()
-	segmentList = realtimeNode.push(segmentCount)
-	coordinator = Coordinator()
-	HistNodeList = []
-	for x in range (1, numHistorical)
-		HistNodeList.append(HistoricalNode(x))
-	coordinator.placeSegments(segmentList, HistNodeList, placementstrategy)
+def createHistoricalNodes(historicalNodeCount):
+	historicalNodeList = list()
+	for i in xrange(historicalNodeCount):
+		historicalNodeList.append(HistoricalNode(i+1))
+	return historicalNodeList
+
+def printQueryList(querylist):
+	for query in querylist:
+		print query.info()
 
 configFile = checkAndReturnArgs(sys.argv)
 config = getConfig(configFile)
@@ -59,10 +63,25 @@ segmentCount = config.getSegmentCount()
 queryCount = config.getQueryCount()
 segmentPerQuery = config.getSegmentPerQuery()
 distribution = config.getDistribution()
+historicalNodeCount = config.getHistoricalNodeCount()
 placementstrategy = config.getPlacementStrategy()
 
+#Creating Historical Nodes
+print "Creating Historical Nodes"
+historicalNodeList = createHistoricalNodes(historicalNodeCount)
+print len(historicalNodeList)
+
+#Generating Segments
+print "Generating Segments"
+segmentList = RealTimeNode.generateSegments(segmentCount)
+RealTimeNode.printlist(segmentList)
+
+#Placing Segments
+print "Placing Segments"
+Coordinator.placeSegments(segmentList, historicalNodeList, placementstrategy)
+Coordinator.printCurrentPlacement(historicalNodeList)
+
+#Generating Queries
+print "Generating Queries"
 querylist = QueryGenerator.generateQueries(segmentCount, queryCount, segmentPerQuery, DistributionFactory.createDistribution(distribution));
-for query in querylist:
-	query.info()
-
-
+printQueryList(querylist)

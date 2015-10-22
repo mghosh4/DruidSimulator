@@ -5,6 +5,7 @@ class ParseConfig:
 		self.querycount = 5
 		self.segmentperquery = 3
 		self.distribution = "uniform"
+		self.historicalnodecount = 3
 		self.placestrategy = "random"
 
 		self.parseConfigFile(configFilePath)
@@ -27,6 +28,8 @@ class ParseConfig:
 					self.segmentperquery = int(value)
 				elif key == "distribution":
 					self.distribution = value
+				elif key == "historicalnodecount":
+					self.historicalnodecount = int(value)
 				elif key == "placementstrategy":
 					self.placementstrategy = value
 
@@ -41,7 +44,10 @@ class ParseConfig:
 
 	def getDistribution(self):
 		return self.distribution
-	
+
+	def getHistoricalNodeCount(self):
+		return self.historicalnodecount
+
 	def getPlacementStrategy(self):
 		return self.placementstrategy
 
@@ -51,6 +57,7 @@ class ParseConfig:
 		print "Query Count : %d" % self.getQueryCount()
 		print "Segment Per Query : %d" % self.getSegmentPerQuery()
 		print "Distribution : " + self.getDistribution()
+		print "Historical Node Count : %d" % self.getHistoricalNodeCount()
 		print "Placement Strategy : " + self.getPlacementStrategy()
 		
 		
