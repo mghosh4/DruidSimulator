@@ -6,4 +6,4 @@ class Segment(object):
 		self.value = value
 		
 	def info(self)
-		print "segment source: ", self.source, "segment time: ", self.time
+		print "segment source: ", self.source, "segment time: ", self.time 
