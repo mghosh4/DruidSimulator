@@ -8,5 +8,5 @@ class Coordinator(Node):
 	
 	@staticmethod
 	def placeSegments(segmentlist, historicalnodelist, placementstrategy):
-        strategy = PlacementFactory.createPlacementStrategy(placementstrategy)
-        strategy.placeSegments(segmentlist, historicalNodelist)
+        	strategy = PlacementFactory.createPlacementStrategy(placementstrategy)
+	        strategy.placeSegments(segmentlist, historicalNodelist)
