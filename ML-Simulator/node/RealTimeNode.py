@@ -1,5 +1,5 @@
 from Node import Node
-from utilities/Global import *
+
 
 class RealTimeNode(Node):
 	
@@ -9,7 +9,8 @@ class RealTimeNode(Node):
 	def push(self, coordinator,size )
 		for x in range (1, self.interations)
 			list = generator.populate("random", 100)
-			coordinator.pool.add(list)
+			coordinator.add(list)
+			
 			
 		
 		

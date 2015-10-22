@@ -1,5 +1,4 @@
 from Node import Node
-import utilities/Global as g
 from array import *
 
 class HistoricalNode(Node):

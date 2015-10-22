@@ -2,11 +2,17 @@ from Node import Node
 
 class Coordinator(Node):
 	
-	pool = {}
+	pool = []
 	
-	def add(self, list):
+	@staticmethod
+	def add(self, list, numHistorical):
+		HistNodeList = []
+		for x in range (1, numHistorical)
+			HistNodeList.append(HistoricalNode( "Historical", x))
 		for entry in list
-			pool.add(entry)
-		PlacementStrategy(pool)
+			pool.append(entry)
+		placement_map = PlacementStrategy(numHistorical, pool)
+		
+			
 		
 		

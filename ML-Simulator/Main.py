@@ -50,7 +50,10 @@ segmentCount = config.getSegmentCount()
 queryCount = config.getQueryCount()
 segmentPerQuery = config.getSegmentPerQuery()
 distribution = config.getDistribution()
+placementstrategy = config.getPlacementStrategy()
 
 querylist = QueryGenerator.generateQueries(segmentCount, queryCount, segmentPerQuery, DistributionFactory.createDistribution(distribution));
 for query in querylist:
 	query.info()
+
+realtimeNode = 

@@ -1,5 +1,5 @@
 import random
-import utilities/Global as g
+
 
 class Node(object):
 	def __init__(self, type):
