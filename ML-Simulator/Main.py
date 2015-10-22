@@ -40,6 +40,15 @@ def checkAndReturnArgs(args):
 def getConfig(configFile):
 	configFilePath = configFile
 	return ParseConfig(configFilePath)
+	
+def setupCluster(segmentCount, placementstrategy):
+	realtimeNode = RealTimeNode()
+	segmentList = realtimeNode.push(segmentCount)
+	coordinator = Coordinator()
+	HistNodeList = []
+	for x in range (1, numHistorical)
+		HistNodeList.append(HistoricalNode(x))
+	coordinator.placeSegments(segmentList, HistNodeList, placementstrategy)
 
 configFile = checkAndReturnArgs(sys.argv)
 config = getConfig(configFile)
@@ -56,4 +65,4 @@ querylist = QueryGenerator.generateQueries(segmentCount, queryCount, segmentPerQ
 for query in querylist:
 	query.info()
 
-realtimeNode = 
+
