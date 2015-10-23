@@ -11,6 +11,8 @@ from DistributionFactory import DistributionFactory
 from HistoricalNode import HistoricalNode
 from RealTimeNode import RealTimeNode
 from Coordinator import Coordinator
+from Broker import Broker
+
 
 def testDistributionCode():
 	uniformList = QueryGenerator.generateQueries(10, 5, 3, Uniform());
@@ -85,3 +87,6 @@ Coordinator.printCurrentPlacement(historicalNodeList)
 print "Generating Queries"
 querylist = QueryGenerator.generateQueries(segmentCount, queryCount, segmentPerQuery, DistributionFactory.createDistribution(distribution));
 printQueryList(querylist)
+
+print "Calculating Scores"
+Broker.timeCalculation(historicalNodeList, querylist)
