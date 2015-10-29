@@ -65,15 +65,15 @@ print "Generating Segments"
 segmentList = RealTimeNode.generateSegments(segmentCount)
 RealTimeNode.printlist(segmentList)
 
-#Placing Segments
-print "Placing Segments"
-Coordinator.placeSegments(segmentList, historicalNodeList, placementstrategy)
-Coordinator.printCurrentPlacement(historicalNodeList)
-
 #Generating Queries
 print "Generating Queries"
 querylist = QueryGenerator.generateQueries(queryCount, segmentCount, DistributionFactory.createDistribution(querysegmentdistribution), queryminsize, querymaxsize, DistributionFactory.createDistribution(querysizedistribution));
 printQueryList(querylist)
+
+#Placing Segments
+print "Placing Segments"
+Coordinator.placeSegments(segmentList, historicalNodeList, querylist, placementstrategy)
+Coordinator.printCurrentPlacement(historicalNodeList)
 
 #Calculating Scores
 print "Calculating Scores"

@@ -8,3 +8,5 @@ class PlacementFactory(object):
 			return Random()
 		elif strategy == "druidcostbased":
 			return DruidCostBased()
+		elif strategy == "bestfit":
+			return BestFit()

@@ -7,9 +7,9 @@ from Node import Node
 class Coordinator(Node):
 	
 	@staticmethod
-	def placeSegments(segmentlist, historicalnodelist, placementstrategy):
-        	strategy = PlacementFactory.createPlacementStrategy(placementstrategy)
-	        strategy.placeSegments(segmentlist, historicalnodelist)
+	def placeSegments(segmentList, historicalNodeList, queryList, placementStrategy):
+        	strategy = PlacementFactory.createPlacementStrategy(placementStrategy)
+	        strategy.placeSegments(segmentList, historicalNodeList, queryList)
 
 	@staticmethod
 	def printCurrentPlacement(historicalNodeList):
