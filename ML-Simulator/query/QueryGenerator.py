@@ -1,17 +1,26 @@
+from Utils import Utils
 from Query import Query
 
 class QueryGenerator(object):
 
 	@staticmethod
-	def generateQueries(segmentCount, numQueries, segmentPerQuery, distGenerator):
-		count = 0
+	def generateQueries(numQueries, segmentCount, segmentGenerator, minSize, maxSize, sizeGenerator):
 		querylist = list()
-		segmentList = distGenerator.generateQuerySegments(numQueries*segmentPerQuery, segmentCount)
-		#Split the segment list into each query
-		for _ in xrange(numQueries):
+		segmentlist = segmentGenerator.generateDistribution(1, segmentCount, numQueries)
+		print "Segment List"
+		Utils.printlist(segmentlist)
+		sizelist = sizeGenerator.generateDistribution(minSize, maxSize, numQueries)
+		print "Size List"
+		Utils.printlist(sizelist)
+		for i in xrange(numQueries):
 			q = Query()
-			for _ in xrange(segmentPerQuery):
-				q.add(segmentList[count])
-				count = count + 1
+			startsegment = 0
+			chosensegment = segmentlist[i]
+			if chosensegment + sizelist[i] - 1 > segmentCount:
+				startsegment = chosensegment - (sizelist[i] - (segmentCount - chosensegment + 1))
+			else:
+				startsegment = chosensegment
+			for j in xrange(startsegment,startsegment + sizelist[i]):
+				q.add(j)
 			querylist.append(q);
 		return querylist

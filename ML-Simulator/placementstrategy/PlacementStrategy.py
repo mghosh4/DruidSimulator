@@ -1,6 +1,4 @@
-import sys,os
 import numpy
-sys.path.append(os.path.abspath('../node'))
 from HistoricalNode import HistoricalNode
 
 class PlacementStrategy(object):

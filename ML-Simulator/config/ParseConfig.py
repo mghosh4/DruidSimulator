@@ -1,10 +1,13 @@
+#TODO: Check if the minsize and maxsize is less than the segmentcount
 import os
 class ParseConfig:
 	def __init__(self, configFilePath):
 		self.segmentcount = 10
 		self.querycount = 5
-		self.segmentperquery = 3
-		self.distribution = "uniform"
+		self.qsegdistrib = "uniform"
+		self.qsizedistrib = "uniform"
+		self.queryminsize = 3
+		self.querymaxsize = 7
 		self.historicalnodecount = 3
 		self.placestrategy = "random"
 
@@ -24,10 +27,14 @@ class ParseConfig:
 					self.segmentcount = int(value)
 				elif key == "querycount":
 					self.querycount = int(value)
-				elif key == "segmentperquery":
-					self.segmentperquery = int(value)
-				elif key == "distribution":
-					self.distribution = value
+				elif key == "querysegmentdistribution":
+					self.qsegdistrib = value
+				elif key == "querysizedistribution":
+					self.qsizedistrib = value
+				elif key == "queryminsize":
+					self.queryminsize = int(value)
+				elif key == "querymaxsize":
+					self.querymaxsize = int(value)
 				elif key == "historicalnodecount":
 					self.historicalnodecount = int(value)
 				elif key == "placementstrategy":
@@ -39,11 +46,17 @@ class ParseConfig:
 	def getQueryCount(self):
 		return self.querycount
 
-	def getSegmentPerQuery(self):
-		return self.segmentperquery
+	def getQuerySegmentDistribution(self):
+		return self.qsegdistrib
 
-	def getDistribution(self):
-		return self.distribution
+	def getQuerySizeDistribution(self):
+		return self.qsizedistrib
+
+	def getQueryMinSize(self):
+		return self.queryminsize
+
+	def getQueryMaxSize(self):
+		return self.querymaxsize
 
 	def getHistoricalNodeCount(self):
 		return self.historicalnodecount
@@ -55,8 +68,10 @@ class ParseConfig:
 		print "Config details"
 		print "Segment Count : %d" % self.getSegmentCount()
 		print "Query Count : %d" % self.getQueryCount()
-		print "Segment Per Query : %d" % self.getSegmentPerQuery()
-		print "Distribution : " + self.getDistribution()
+		print "Query Segment Distribution : " + self.getQuerySegmentDistribution()
+		print "Query Size Distribution : " + self.getQuerySizeDistribution()
+		print "Minimum Query Size : %d" % self.getQueryMinSize()
+		print "Maximum Query Size : %d" % self.getQueryMaxSize()
 		print "Historical Node Count : %d" % self.getHistoricalNodeCount()
 		print "Placement Strategy : " + self.getPlacementStrategy()
 		

@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath('query'))
 sys.path.append(os.path.abspath('distribution'))
 sys.path.append(os.path.abspath('config'))
 sys.path.append(os.path.abspath('node'))
+sys.path.append(os.path.abspath('utilities'))
 
 from ParseConfig import ParseConfig
 from QueryGenerator import QueryGenerator
@@ -13,22 +14,6 @@ from RealTimeNode import RealTimeNode
 from Coordinator import Coordinator
 from Broker import Broker
 
-
-def testDistributionCode():
-	uniformList = QueryGenerator.generateQueries(10, 5, 3, Uniform());
-	print "Uniform"
-	for query in uniformList:
-		query.info()
-	
-	zipfList = QueryGenerator.generateQueries(10, 5, 3, Zipfian());
-	print "Zipfian"
-	for query in zipfList:
-		query.info()
-	
-	latestList = QueryGenerator.generateQueries(10, 5, 3, Latest());
-	print "Latest"
-	for query in latestList:
-		query.info()
 
 def getConfigFile(args):
 	return args[1]
@@ -63,8 +48,10 @@ config.printConfig()
 
 segmentCount = config.getSegmentCount()
 queryCount = config.getQueryCount()
-segmentPerQuery = config.getSegmentPerQuery()
-distribution = config.getDistribution()
+querysegmentdistribution = config.getQuerySegmentDistribution()
+querysizedistribution = config.getQuerySizeDistribution()
+queryminsize = config.getQueryMinSize()
+querymaxsize = config.getQueryMaxSize()
 historicalNodeCount = config.getHistoricalNodeCount()
 placementstrategy = config.getPlacementStrategy()
 
@@ -73,7 +60,7 @@ print "Creating Historical Nodes"
 historicalNodeList = createHistoricalNodes(historicalNodeCount)
 print len(historicalNodeList)
 
-#Generating Segments
+#Generating Segments indexed starting from 1
 print "Generating Segments"
 segmentList = RealTimeNode.generateSegments(segmentCount)
 RealTimeNode.printlist(segmentList)
@@ -85,8 +72,9 @@ Coordinator.printCurrentPlacement(historicalNodeList)
 
 #Generating Queries
 print "Generating Queries"
-querylist = QueryGenerator.generateQueries(segmentCount, queryCount, segmentPerQuery, DistributionFactory.createDistribution(distribution));
+querylist = QueryGenerator.generateQueries(queryCount, segmentCount, DistributionFactory.createDistribution(querysegmentdistribution), queryminsize, querymaxsize, DistributionFactory.createDistribution(querysizedistribution));
 printQueryList(querylist)
 
+#Calculating Scores
 print "Calculating Scores"
 Broker.timeCalculation(historicalNodeList, querylist)

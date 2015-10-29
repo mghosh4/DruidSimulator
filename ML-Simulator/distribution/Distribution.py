@@ -1,37 +1,45 @@
 import numpy
+from Utils import Utils
 class Uniform(object):
 
-	def generateQuerySegments(self, numSegments, segmentCount):
-		start = 1
-		end = segmentCount 
-
+	def generateDistribution(self, minSample, maxSample, numSamples):
 		# start and end is inclusive
-		return numpy.random.random_integers(start, end, numSegments)
+		return numpy.random.random_integers(minSample, maxSample, numSamples)
 
 class Zipfian(object):
 
-	def generateQuerySegments(self, numSegments, segmentCount):
+	def generateDistribution(self, minSample, maxSample, numSamples):
 		shape = 1.2   # the distribution shape parameter, also known as `a` or `alpha`
-		zipfsegment = list()
+		zipfsample = self.randZipf(maxSample - minSample + 1, shape, numSamples)
+		print "Zipf List"
+		Utils.printlist(zipfsample)
 
-		while len(zipfsegment) < numSegments:
-			zipfsegment = numpy.random.zipf(shape, 3*numSegments)
-			zipfsegment = zipfsegment[zipfsegment<=segmentCount]
-			print "Zipfian Count: %d" % len(zipfsegment)	
+		return [ x + minSample for x in zipfsample ]
 
-		zipfsegment = zipfsegment[0:numSegments]
-		return [ int(x) for x in zipfsegment ]
+	# Used code from stackoverflow link http://stackoverflow.com/questions/31027739/python-custom-zipf-number-generator-performing-poorly
+	def randZipf(self, n, alpha, numSamples): 
+	    	# Calculate Zeta values from 1 to n: 
+	    	tmp = numpy.power( numpy.arange(1, n+1), -alpha )
+	    	zeta = numpy.r_[0.0, numpy.cumsum(tmp)]
+	    	# Store the translation map: 
+	    	distMap = [x / zeta[-1] for x in zeta]
+	    	# Generate an array of uniform 0-1 pseudo-random values: 
+	    	u = numpy.random.random(numSamples)
+	    	# bisect them with distMap
+	    	v = numpy.searchsorted(distMap, u)
+	    	samples = [t-1 for t in v]
+	    	return samples
 
-class Latest(object):
+class Latest(Zipfian):
 
-	def generateQuerySegments(self, numSegments, segmentCount):
-		shape = 1.2   # the distribution shape parameter, also known as `a` or `alpha`
-		latestsegment = list()
+	def generateDistribution(self, minSample, maxSample, numSamples):
+		latestsample = super(Latest, self).generateDistribution(minSample, maxSample, numSamples)
+		return [maxSample - x + minSample for x in latestsample]
 
-		while len(latestsegment) < numSegments:
-			latestsegment = numpy.random.zipf(shape, 3*numSegments)
-			latestsegment = latestsegment[latestsegment<=segmentCount]
-			print "Latest Count: %d" % len(latestsegment)
 
-		latestsegment = latestsegment[0:numSegments]
-		return [ int(segmentCount - x + 1) for x in latestsegment ]
+class ScrambledZipfian(Zipfian):
+
+	def generateDistribution(self, minSample, maxSample, numSamples):
+		scrambledzipfiansample = super(ScrambledZipfian, self).generateDistribution(minSample, maxSample, numSamples)
+		itemcount = maxSample - minSample + 1
+		return [minSample + x % itemcount for x in scrambledzipfiansample]

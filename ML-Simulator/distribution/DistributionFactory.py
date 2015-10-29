@@ -6,6 +6,6 @@ class DistributionFactory(object):
 		if distribution == "uniform":
 			return Uniform()
 		elif distribution == "zipfian":
-			return Zipfian()
+			return ScrambledZipfian()
 		elif distribution == "latest":
 			return Latest()
