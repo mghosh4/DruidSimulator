@@ -8,6 +8,12 @@ class PlacementStrategy(object):
         for segment in segmentList:
             historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)
             historicalNodeList[historicalNodeIndex-1].add_segment(segment)
+			repList = replicateSegment(historicalNodeList, historicalNodeList[historicalNodeIndex-1], "balance", 2 )
+			for hn in historicalNodeList:
+				for rp in repList:
+					if hn.id == rp.id:
+						hn.add_segment(segment)
+			
 
 class Random(PlacementStrategy):
     def getNextIndex(self, segment, historicalNodeList):
