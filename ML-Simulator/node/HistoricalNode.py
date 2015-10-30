@@ -13,7 +13,7 @@ class HistoricalNode(Node):
 		self.segmentlist.append(segment)
 		
 	def add_replica(self, segment):
-		self.replicalist.append(replica)
+		self.replicalist.append(segment)
 	
 	def queue_size(self):
 		return len(self.segmentlist)
@@ -36,6 +36,10 @@ class HistoricalNode(Node):
 	    	return cost
 
 	def printSegmentList(self):
-		print "Historical Node %d" % self.id
+		print "Historical Node %d primary" % self.id
 		print ', '.join(x.info() for x in self.segmentlist)	
+		print "Historical Node %d replica" % self.id
+		print ', '.join(x.info() for x in self.replicalist)
+		
+		
 		

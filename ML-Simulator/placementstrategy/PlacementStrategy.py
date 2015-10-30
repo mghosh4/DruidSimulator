@@ -15,11 +15,11 @@ class PlacementStrategy(object):
 			historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)
 			print "Primary node %d" % historicalNodeList[historicalNodeIndex-1].id
 			historicalNodeList[historicalNodeIndex-1].add_segment(segment)
-			repList = DruidReplicationStrategy.replicateSegment(historicalNodeList, historicalNodeList[historicalNodeIndex-1], "balance", 2 )
+			repidList = DruidReplicationStrategy.replicateSegments(historicalNodeList, historicalNodeList[historicalNodeIndex-1], "balance", 3)
 			for hn in historicalNodeList:
-				for rp in repList:
-					if hn.id == rp.id:
-						print "Replica node %d" % rp.id
+				for rpid in repidList:
+					if hn.id == rpid:
+						print "Replica node %d" % rpid
 						hn.add_replica(segment)
 			
 
