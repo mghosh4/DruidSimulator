@@ -27,11 +27,13 @@ class Broker(Node):
 		print "Placement Strategy: " + placementstrategy
 		print "Max Score: %d" % maxscore
 		print "Last node to finish ID: %d" % target
-		logging.basicConfig(filename='FinalScore.log',level=logging.DEBUG)
-		logging.debug('This message should go to the log file')
-		logging.info('So should this')
-		logging.warning('And this, too')
-		print "Placement Strategy: " + placementstrategy
-		print "Max Score: %d" % maxscore
-		print "Last node to finish ID: %d" % target
+		fn = placementstrategy + '_finalscore.log'
+		logging.basicConfig(filename= fn, level=logging.DEBUG)
+		#logging.debug('This message should go to the log file')
+		#logging.info('So should this')
+		#logging.warning('And this, too')
+		logging.info('Placement Strategy: %s', placementstrategy)
+		logging.info('Max Score: %d', maxscore)
+		logging.info('Last node to finish ID: %d', target)
+
 
