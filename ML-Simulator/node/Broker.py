@@ -4,7 +4,7 @@ import logging
 class Broker(Node):     
 	
 	@staticmethod
-	def timeCalculation( HistNodeList, queryList, placementstrategy):
+	def timeCalculation( HistNodeList, queryList, placementstrategy, segmentcount, querycount, historicalnodecount):
 		timeMap = []
 		for x in range (0, len(HistNodeList)+1):
 			timeMap.append(0)
@@ -27,13 +27,16 @@ class Broker(Node):
 		print "Placement Strategy: " + placementstrategy
 		print "Max Score: %d" % maxscore
 		print "Last node to finish ID: %d" % target
-		fn = placementstrategy + '_finalscore.log'
-		logging.basicConfig(filename= fn, level=logging.DEBUG)
+		#fn = placementstrategy + '_finalscore.log'
+		#logging.basicConfig(filename= fn, level=logging.DEBUG)
 		#logging.debug('This message should go to the log file')
 		#logging.info('So should this')
 		#logging.warning('And this, too')
-		logging.info('Placement Strategy: %s', placementstrategy)
-		logging.info('Max Score: %d', maxscore)
-		logging.info('Last node to finish ID: %d', target)
+		#logging.info('Segment count: %d', segmentcount)
+		#logging.info('Query count: %d', segmentcount)
+		#logging.info('Placement Strategy: %s', placementstrategy)
+		#logging.info('Historical Node Count: %d', historicalnodecount)
+		logging.info(' +++++Max Score: %d+++++', maxscore)
+		logging.info('+++++Last node to finish ID: %d+++++', target)
 
 

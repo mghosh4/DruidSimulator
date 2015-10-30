@@ -11,15 +11,15 @@ class PlacementStrategy(object):
     def placeSegments(self, segmentList, historicalNodeList, queryList):
 		repList = []
 		for segment in segmentList:
-			print "=== Placing segment %d ===" % segment.time
+			#print "=== Placing segment %d ===" % segment.time
 			historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)
-			print "Primary node %d" % historicalNodeList[historicalNodeIndex-1].id
+			#print "Primary node %d" % historicalNodeList[historicalNodeIndex-1].id
 			historicalNodeList[historicalNodeIndex-1].add_segment(segment)
 			repidList = DruidReplicationStrategy.replicateSegments(historicalNodeList, historicalNodeList[historicalNodeIndex-1], "balance", 3)
 			for hn in historicalNodeList:
 				for rpid in repidList:
 					if hn.id == rpid:
-						print "Replica node %d" % rpid
+						#print "Replica node %d" % rpid
 						hn.add_replica(segment)
 			
 

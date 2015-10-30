@@ -1,27 +1,90 @@
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 597
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 831+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 602
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 783+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 569
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 745+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 600
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 824+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 580
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 793+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 607
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 798+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 571
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 825+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 589
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 823+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: druidcostbased
-INFO:root:Max Score: 601
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 786+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
+INFO:root:Placement Strategy: druidcostbased
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 790+++++
+INFO:root:+++++Last node to finish ID: 9+++++

@@ -1,45 +1,81 @@
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 189
-INFO:root:Last node to finish ID: 4
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 177+++++
+INFO:root:+++++Last node to finish ID: 8+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 172
-INFO:root:Last node to finish ID: 1
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 176+++++
+INFO:root:+++++Last node to finish ID: 6+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 190
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 145+++++
+INFO:root:+++++Last node to finish ID: 3+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 225
-INFO:root:Last node to finish ID: 2
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 224+++++
+INFO:root:+++++Last node to finish ID: 9+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 161
-INFO:root:Last node to finish ID: 5
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 198+++++
+INFO:root:+++++Last node to finish ID: 6+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 128
-INFO:root:Last node to finish ID: 2
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 201+++++
+INFO:root:+++++Last node to finish ID: 6+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 201
-INFO:root:Last node to finish ID: 2
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 157+++++
+INFO:root:+++++Last node to finish ID: 6+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 143
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 197+++++
+INFO:root:+++++Last node to finish ID: 4+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: random
-INFO:root:Max Score: 172
-INFO:root:Last node to finish ID: 2
-INFO:root:Placement Strategy: random
-INFO:root:Max Score: 144
-INFO:root:Last node to finish ID: 4
-INFO:root:Placement Strategy: random
-INFO:root:Max Score: 169
-INFO:root:Last node to finish ID: 3
-INFO:root:Placement Strategy: random
-INFO:root:Max Score: 158
-INFO:root:Last node to finish ID: 5
-INFO:root:Placement Strategy: random
-INFO:root:Max Score: 209
-INFO:root:Last node to finish ID: 1
-INFO:root:Placement Strategy: random
-INFO:root:Max Score: 249
-INFO:root:Last node to finish ID: 4
-INFO:root:Placement Strategy: random
-INFO:root:Max Score: 166
-INFO:root:Last node to finish ID: 2
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 143+++++
+INFO:root:+++++Last node to finish ID: 8+++++

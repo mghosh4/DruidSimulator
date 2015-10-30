@@ -1,45 +1,72 @@
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 166
-INFO:root:Last node to finish ID: 1
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 183+++++
+INFO:root:+++++Last node to finish ID: 3+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 222
-INFO:root:Last node to finish ID: 2
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 183+++++
+INFO:root:+++++Last node to finish ID: 4+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 169
-INFO:root:Last node to finish ID: 1
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 155+++++
+INFO:root:+++++Last node to finish ID: 2+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 159
-INFO:root:Last node to finish ID: 3
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 160+++++
+INFO:root:+++++Last node to finish ID: 2+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 162
-INFO:root:Last node to finish ID: 2
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 166+++++
+INFO:root:+++++Last node to finish ID: 3+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 185
-INFO:root:Last node to finish ID: 2
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 160+++++
+INFO:root:+++++Last node to finish ID: 2+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 160
-INFO:root:Last node to finish ID: 1
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 175+++++
+INFO:root:+++++Last node to finish ID: 3+++++
+INFO:root:Segment count: 1000
+INFO:root:Query count: 100
+INFO:root:Query Segment Distribution: latest
+INFO:root:Query Size Distribution: latest
+INFO:root:Query size range: 3, 10
 INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 167
-INFO:root:Last node to finish ID: 2
-INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 160
-INFO:root:Last node to finish ID: 1
-INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 161
-INFO:root:Last node to finish ID: 3
-INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 161
-INFO:root:Last node to finish ID: 3
-INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 185
-INFO:root:Last node to finish ID: 2
-INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 174
-INFO:root:Last node to finish ID: 1
-INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 202
-INFO:root:Last node to finish ID: 3
-INFO:root:Placement Strategy: bestfit
-INFO:root:Max Score: 169
-INFO:root:Last node to finish ID: 1
+INFO:root:Historical Node Count: 10
+INFO:root: +++++Max Score: 168+++++
+INFO:root:+++++Last node to finish ID: 4+++++

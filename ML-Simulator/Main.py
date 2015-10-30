@@ -1,5 +1,6 @@
 import os,sys
 import time
+import logging
 sys.path.append(os.path.abspath('query'))
 sys.path.append(os.path.abspath('distribution'))
 sys.path.append(os.path.abspath('config'))
@@ -56,6 +57,15 @@ querymaxsize = config.getQueryMaxSize()
 historicalNodeCount = config.getHistoricalNodeCount()
 placementstrategy = config.getPlacementStrategy()
 
+fn = placementstrategy + '_finalscore.log'
+logging.basicConfig(filename= fn, level=logging.DEBUG)
+logging.info('Segment count: %d', segmentCount)
+logging.info('Query count: %d', queryCount)
+logging.info('Query Segment Distribution: %s', querysegmentdistribution)
+logging.info('Query Size Distribution: %s', querysizedistribution)
+logging.info('Query size range: %d, %d', queryminsize, querymaxsize)
+logging.info('Placement Strategy: %s', placementstrategy)
+logging.info('Historical Node Count: %d', historicalNodeCount)
 #Creating Historical Nodes
 print "Creating Historical Nodes"
 historicalNodeList = createHistoricalNodes(historicalNodeCount)
@@ -78,4 +88,4 @@ Coordinator.printCurrentPlacement(historicalNodeList)
 
 #Calculating Scores
 print "Calculating Scores"
-Broker.timeCalculation(historicalNodeList, querylist, placementstrategy)
+Broker.timeCalculation(historicalNodeList, querylist, placementstrategy, segmentCount, queryCount, historicalNodeCount)
