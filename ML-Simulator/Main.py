@@ -78,4 +78,4 @@ Coordinator.printCurrentPlacement(historicalNodeList)
 
 #Calculating Scores
 print "Calculating Scores"
-Broker.timeCalculation(historicalNodeList, querylist)
+Broker.timeCalculation(historicalNodeList, querylist, placementstrategy)
