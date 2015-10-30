@@ -3,6 +3,7 @@ from Node import Node
 class HistoricalNode(Node):
 	def __init__(self, id):
 		self.segmentlist = list()
+		self.replicalist = list()
 		self.id = id
 
 	def getID(self):
@@ -10,9 +11,15 @@ class HistoricalNode(Node):
 			
 	def add_segment(self, segment):
 		self.segmentlist.append(segment)
+		
+	def add_replica(self, segment):
+		self.replicalist.append(replica)
 	
 	def queue_size(self):
 		return len(self.segmentlist)
+	
+	def replica_size(self):
+		return len(self.replicalist)	
 		
 	def lookup(self, time):
 		for segment in self.segmentlist:

@@ -1,18 +1,26 @@
 import numpy
 import operator
 import math
+import sys
+import os.path
 from HistoricalNode import HistoricalNode
+from DruidReplicationStrategy import DruidReplicationStrategy
 
 class PlacementStrategy(object):
+
     def placeSegments(self, segmentList, historicalNodeList, queryList):
-        for segment in segmentList:
-            historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)
-            historicalNodeList[historicalNodeIndex-1].add_segment(segment)
-			repList = replicateSegment(historicalNodeList, historicalNodeList[historicalNodeIndex-1], "balance", 2 )
+		repList = []
+		for segment in segmentList:
+			print "=== Placing segment %d ===" % segment.time
+			historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)
+			print "Primary node %d" % historicalNodeList[historicalNodeIndex-1].id
+			historicalNodeList[historicalNodeIndex-1].add_segment(segment)
+			repList = DruidReplicationStrategy.replicateSegment(historicalNodeList, historicalNodeList[historicalNodeIndex-1], "balance", 2 )
 			for hn in historicalNodeList:
 				for rp in repList:
 					if hn.id == rp.id:
-						hn.add_segment(segment)
+						print "Replica node %d" % rp.id
+						hn.add_replica(segment)
 			
 
 class Random(PlacementStrategy):

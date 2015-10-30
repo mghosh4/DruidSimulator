@@ -4,10 +4,13 @@ from copy import deepcopy
 
 class DruidReplicationStrategy(ReplicationStrategy):
 	
+	
+	@staticmethod
 	def replicateSegments(self, historicalNodeList, primary, strategy, replicationFactor):
 		if strategy == "balance":
-		return balance(historicalNodeList, primary, replicationFactor)
-		
+			return balance(historicalNodeList, primary, replicationFactor)
+	
+	@staticmethod	
 	def balance(self, historicalNodeList, primary, replicationFactor):
 		lst = deepcopy(historcialNodeList)
 		

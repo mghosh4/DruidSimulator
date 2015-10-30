@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath('distribution'))
 sys.path.append(os.path.abspath('config'))
 sys.path.append(os.path.abspath('node'))
 sys.path.append(os.path.abspath('utilities'))
+sys.path.append(os.path.abspath('replicationstrategy'))
 
 from ParseConfig import ParseConfig
 from QueryGenerator import QueryGenerator
