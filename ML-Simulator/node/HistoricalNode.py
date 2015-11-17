@@ -28,18 +28,13 @@ class HistoricalNode(Node):
 	
 		return False
 
-	def calculateDruidCost(self):
-	    	cost = 0
-	    	for segment in self.segmentlist:
-	    	    cost += segment.getTime()
-	
-	    	return cost
+	def getSegmentAndReplicaList(self):
+	    	allsegmentlist = list(self.segmentlist)
+		allsegmentlist.extend(self.replicalist)
+	    	return allsegmentlist
 
 	def printSegmentList(self):
 		print "Historical Node %d primary" % self.id
 		print ', '.join(x.info() for x in self.segmentlist)	
 		print "Historical Node %d replica" % self.id
 		print ', '.join(x.info() for x in self.replicalist)
-		
-		
-		

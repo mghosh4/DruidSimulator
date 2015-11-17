@@ -1,6 +1,6 @@
 import os,sys
 import time
-import logging
+import threading
 sys.path.append(os.path.abspath('query'))
 sys.path.append(os.path.abspath('distribution'))
 sys.path.append(os.path.abspath('config'))
@@ -26,66 +26,94 @@ def checkAndReturnArgs(args):
 		print "Usage: python " + args[0] + " <config_file>"
 		exit()
 
-	configFile = getConfigFile(args)
-	return configFile
+	configfile = getConfigFile(args)
+	return configfile
 
 def getConfig(configFile):
-	configFilePath = configFile
-	return ParseConfig(configFilePath)
+	configfilePath = configFile
+	return ParseConfig(configfilePath)
 	
 def createHistoricalNodes(historicalNodeCount):
-	historicalNodeList = list()
+	historicalnodelist = list()
 	for i in xrange(historicalNodeCount):
-		historicalNodeList.append(HistoricalNode(i+1))
-	return historicalNodeList
+		historicalnodelist.append(HistoricalNode(i+1))
+	return historicalnodelist
 
-def printQueryList(querylist):
-	for query in querylist:
+def printQueryList(queryList):
+	for query in queryList:
 		print query.info()
 
-configFile = checkAndReturnArgs(sys.argv)
-config = getConfig(configFile)
+def runExperiment(historicalNodeCount, segmentList, replicationFactor, queryList, placementStrategy, routingStrategy):
+	segmentcount = len(segmentList)
+
+	#Creating Historical Nodes
+	print "Creating Historical Nodes"
+	historicalnodelist = createHistoricalNodes(historicalNodeCount)
+	
+	#Placing Segments
+	print "Placing Segments"
+	avgreplication = Coordinator.placeSegmentsAndReplicas(segmentList, replicationFactor, historicalnodelist, queryList, placementStrategy)
+	Coordinator.printCurrentPlacement(historicalnodelist)
+	print("%s,%s Average Replication: %f" % (placementStrategy, routingStrategy, avgreplication))
+	
+	#Calculating Scores
+	print "Routing Queries"
+	timetaken = Broker.routeQueries(queryList, historicalnodelist, routingStrategy, segmentcount)
+	print("%s,%s Overall Completion Time: %d" % (placementStrategy, routingStrategy, timetaken))
+
+#def runExperimentThread(threads, historicalNodeCount, segmentList, replicationFactor, queryList, placementStrategy, routingStrategy):
+#        thread = threading.Thread(target=runExperiment, args=(historicalnodecount, segmentlist, replicationfactor, querylist, placementstrategy, routingstrategy,))
+#        threads.append(thread)
+#        thread.start()
+
+configfile = checkAndReturnArgs(sys.argv)
+config = getConfig(configfile)
 
 config.printConfig()
 
-segmentCount = config.getSegmentCount()
-queryCount = config.getQueryCount()
+segmentcount = config.getSegmentCount()
+querycount = config.getQueryCount()
 querysegmentdistribution = config.getQuerySegmentDistribution()
 querysizedistribution = config.getQuerySizeDistribution()
 queryminsize = config.getQueryMinSize()
 querymaxsize = config.getQueryMaxSize()
-historicalNodeCount = config.getHistoricalNodeCount()
+historicalnodecount = config.getHistoricalNodeCount()
 placementstrategy = config.getPlacementStrategy()
-
-fn = placementstrategy + '_finalscore.log'
-logging.basicConfig(filename= fn, level=logging.DEBUG)
-logging.info('Segment count: %d', segmentCount)
-logging.info('Query count: %d', queryCount)
-logging.info('Query Segment Distribution: %s', querysegmentdistribution)
-logging.info('Query Size Distribution: %s', querysizedistribution)
-logging.info('Query size range: %d, %d', queryminsize, querymaxsize)
-logging.info('Placement Strategy: %s', placementstrategy)
-logging.info('Historical Node Count: %d', historicalNodeCount)
-#Creating Historical Nodes
-print "Creating Historical Nodes"
-historicalNodeList = createHistoricalNodes(historicalNodeCount)
-print len(historicalNodeList)
+replicationfactor = config.getReplicationFactor()
 
 #Generating Segments indexed starting from 1
 print "Generating Segments"
-segmentList = RealTimeNode.generateSegments(segmentCount)
-RealTimeNode.printlist(segmentList)
+segmentlist = RealTimeNode.generateSegments(segmentcount)
+RealTimeNode.printlist(segmentlist)
 
 #Generating Queries
 print "Generating Queries"
-querylist = QueryGenerator.generateQueries(queryCount, segmentCount, DistributionFactory.createDistribution(querysegmentdistribution), queryminsize, querymaxsize, DistributionFactory.createDistribution(querysizedistribution));
+querylist = QueryGenerator.generateQueries(querycount, segmentcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), queryminsize, querymaxsize, DistributionFactory.createSizeDistribution(querysizedistribution));
 printQueryList(querylist)
 
-#Placing Segments
-print "Placing Segments"
-Coordinator.placeSegments(segmentList, historicalNodeList, querylist, placementstrategy)
-Coordinator.printCurrentPlacement(historicalNodeList)
+#threads = list()
 
-#Calculating Scores
-print "Calculating Scores"
-Broker.timeCalculation(historicalNodeList, querylist, placementstrategy, segmentCount, queryCount, historicalNodeCount)
+###  DRUID COST BASED
+placementstrategy = "druidcostbased"
+
+for replicationfactor in xrange(1, 5):
+	### Random Routing Stretagy
+	routingstrategy = "random"
+	runExperiment(historicalnodecount, segmentlist, replicationfactor, querylist, placementstrategy, routingstrategy)
+
+	### Connection Count Based Strategy
+	routingstrategy = "chooseleastloaded"
+	runExperiment(historicalnodecount, segmentlist, replicationfactor, querylist, placementstrategy, routingstrategy)
+
+###  RANDOM BALL BASED
+placementstrategy = "randomballbased"
+routingstrategy = "randomballbased"
+runExperiment(historicalnodecount, segmentlist, replicationfactor, querylist, placementstrategy, routingstrategy)
+
+###  BEST FIT
+placementstrategy = "bestfit"
+routingstrategy = "bestfit"
+runExperiment(historicalnodecount, segmentlist, replicationfactor, querylist, placementstrategy, routingstrategy)
+
+#for thread in threads:
+#    thread.join()

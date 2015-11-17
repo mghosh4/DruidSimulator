@@ -9,7 +9,8 @@ class ParseConfig:
 		self.queryminsize = 3
 		self.querymaxsize = 7
 		self.historicalnodecount = 3
-		self.placestrategy = "random"
+		self.placementstrategy = "random"
+		self.replicationfactor = 3
 
 		self.parseConfigFile(configFilePath)
 
@@ -39,6 +40,8 @@ class ParseConfig:
 					self.historicalnodecount = int(value)
 				elif key == "placementstrategy":
 					self.placementstrategy = value
+				elif key == "replicationfactor":
+					self.replicationfactor = int(value)
 
 	def getSegmentCount(self):
 		return self.segmentcount
@@ -64,6 +67,9 @@ class ParseConfig:
 	def getPlacementStrategy(self):
 		return self.placementstrategy
 
+	def getReplicationFactor(self):
+		return self.replicationfactor
+
 	def printConfig(self):
 		print "Config details"
 		print "Segment Count : %d" % self.getSegmentCount()
@@ -74,5 +80,5 @@ class ParseConfig:
 		print "Maximum Query Size : %d" % self.getQueryMaxSize()
 		print "Historical Node Count : %d" % self.getHistoricalNodeCount()
 		print "Placement Strategy : " + self.getPlacementStrategy()
-		
+		print "Replication Factor : %d" % self.getReplicationFactor()
 		

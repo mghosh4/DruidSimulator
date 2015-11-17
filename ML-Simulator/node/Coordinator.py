@@ -7,9 +7,15 @@ from Node import Node
 class Coordinator(Node):
 	
 	@staticmethod
-	def placeSegments(segmentList, historicalNodeList, queryList, placementStrategy):
+	def placeSegmentsAndReplicas(segmentList, replicationFactor, historicalNodeList, queryList, placementStrategy):
         	strategy = PlacementFactory.createPlacementStrategy(placementStrategy)
-	        strategy.placeSegments(segmentList, historicalNodeList, queryList)
+		numsegments = 0
+	        (segments,unique) = strategy.placeSegments(segmentList, historicalNodeList, queryList)
+		numsegments += segments
+		numsegments += strategy.replicateSegments(segmentList, replicationFactor, historicalNodeList);
+
+		print("NumSegment: %d Segement Count:%d" % (numsegments,unique))
+		return float(numsegments)/unique
 
 	@staticmethod
 	def printCurrentPlacement(historicalNodeList):

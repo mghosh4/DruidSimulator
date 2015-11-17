@@ -1,13 +1,13 @@
-from PlacementStrategy import *
+from RoutingStrategy import *
 
-class PlacementFactory(object):
+class RoutingFactory(object):
 
 	@staticmethod
-	def createPlacementStrategy(strategy):
+	def createRoutingStrategy(strategy):
 		if strategy == "random":
 			return Random()
-		elif strategy == "druidcostbased":
-			return DruidCostBased()
+		if strategy == "chooseleastloaded":
+			return ChooseLeastLoaded()
 		elif strategy == "randomballbased":
 			return RandomBallBased()
 		elif strategy == "bestfit":

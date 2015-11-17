@@ -3,6 +3,7 @@ class Segment(object):
 		self.source = source
 		self.time = time
 		self.value = value
+		self.size = 1
 		
 	def info(self):
 		return str(self.time)
