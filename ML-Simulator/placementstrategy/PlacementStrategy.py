@@ -16,12 +16,29 @@ class PlacementStrategy(object):
 		historicalNodeList[historicalNodeIndex-1].add_segment(segment)
 	return (len(segmentList), len(segmentList))
 
-    def replicateSegments(self, segmentList, replicationFactor, historicalNodeList):
-	for segment in segmentList:
-		for _ in xrange(replicationFactor - 1):
-			historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)		
-			historicalNodeList[historicalNodeIndex-1].add_replica(segment)
-	return (replicationFactor - 1) * len(segmentList)
+    def replicateSegments(self, segmentList, percentreplicate, replicationFactor, historicalNodeList, queryList):
+	replicationmap = dict()
+	for query in queryList:
+	    segmentcountmap = query.getSegmentCount()
+	    for segment,count in segmentcountmap.items():
+                if segment not in replicationmap:
+                    replicationmap[segment] = 0
+                replicationmap[segment] += count
+
+	sorted_dict = sorted(replicationmap.items(), key=operator.itemgetter(1), reverse=True)
+        print sorted_dict
+
+	numreplicate = math.ceil(percentreplicate * len(sorted_dict))
+	replicatedcount = 0
+	for segment,count in sorted_dict:
+            for _ in xrange(replicationFactor - 1):
+		historicalNodeIndex = self.getNextIndex(segmentList[segment - 1], historicalNodeList)		
+		historicalNodeList[historicalNodeIndex-1].add_replica(segmentList[segment - 1])
+	    replicatedcount += 1
+	    if replicatedcount >= numreplicate:
+		break
+
+	return (replicationFactor - 1) * numreplicate
 
 #TODO: getNextIndex should not return a hn index which contains the segment already
 #class Random(PlacementStrategy):
@@ -73,7 +90,7 @@ class RandomBallBased(object):
 	uniqueset = set(allquerysegments)
 	return (count,len(uniqueset))
 
-    def replicateSegments(self, segmentList, replicationFactor, historicalNodeList):
+    def replicateSegments(self, segmentList, replicationFactor, historicalNodeList, queryList):
 	return 0
 
 class BestFit(object):
@@ -117,5 +134,5 @@ class BestFit(object):
 	uniqueset = set(allquerysegments)
 	return (numsegment,len(uniqueset))
 
-    def replicateSegments(self, segmentList, replicationFactor, historicalNodeList):
+    def replicateSegments(self, segmentList, replicationFactor, historicalNodeList, queryList):
 	return 0

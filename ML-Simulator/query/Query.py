@@ -7,3 +7,12 @@ class Query(object):
 
 	def add(self, segment):
 		self.segmentList.append(segment)
+
+	def getSegmentCount(self):
+		segmentcountmap = dict()
+		for segment in self.segmentList:
+                    if segment not in segmentcountmap:
+                        segmentcountmap[segment] = 0
+		    segmentcountmap[segment] += 1
+
+		return segmentcountmap

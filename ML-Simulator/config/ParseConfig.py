@@ -11,6 +11,7 @@ class ParseConfig:
 		self.historicalnodecount = 3
 		self.placementstrategy = "random"
 		self.replicationfactor = 3
+		self.percentreplicate = 0.3
 
 		self.parseConfigFile(configFilePath)
 
@@ -42,6 +43,8 @@ class ParseConfig:
 					self.placementstrategy = value
 				elif key == "replicationfactor":
 					self.replicationfactor = int(value)
+				elif key == "percentreplicate":
+					self.percentreplicate = float(value)
 
 	def getSegmentCount(self):
 		return self.segmentcount
@@ -70,6 +73,9 @@ class ParseConfig:
 	def getReplicationFactor(self):
 		return self.replicationfactor
 
+	def getPercentReplicate(self):
+		return self.percentreplicate
+
 	def printConfig(self):
 		print "Config details"
 		print "Segment Count : %d" % self.getSegmentCount()
@@ -81,4 +87,4 @@ class ParseConfig:
 		print "Historical Node Count : %d" % self.getHistoricalNodeCount()
 		print "Placement Strategy : " + self.getPlacementStrategy()
 		print "Replication Factor : %d" % self.getReplicationFactor()
-		
+		print "Percent Replicate : %f" % self.getPercentReplicate()
