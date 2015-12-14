@@ -8,37 +8,57 @@ from Utils import Utils
 
 class PlacementStrategy(object):
 
-    def placeSegments(self, segmentList, historicalNodeList, queryList):
+    def placeSegments(self, segmentList, deepStorage, historicalNodeList, queryList):
 	for segment in segmentList:
-		#print "=== Placing segment %d ===" % segment.time
-		historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)
-		#print "Primary node %d" % historicalNodeList[historicalNodeIndex-1].id
-		historicalNodeList[historicalNodeIndex-1].add_segment(segment)
+	    #print "=== Placing segment %d ===" % segment.time
+	    historicalNodeIndex = self.getNextIndex(segment, historicalNodeList)
+	    #print "Primary node %d" % historicalNodeList[historicalNodeIndex-1].id
+	    historicalNodeList[historicalNodeIndex-1].add_segment(segment)
 	return (len(segmentList), len(segmentList))
 
-    def replicateSegments(self, segmentList, percentreplicate, replicationFactor, historicalNodeList, queryList):
-	replicationmap = dict()
+    def replicateSegments(self, deepStorage, percentreplicate, replicationFactor, historicalNodeList, queryList):
+	querysegmentmap = dict()
 	for query in queryList:
 	    segmentcountmap = query.getSegmentCount()
 	    for segment,count in segmentcountmap.items():
-                if segment not in replicationmap:
-                    replicationmap[segment] = 0
-                replicationmap[segment] += count
+	    	replicacount = 0
+	    	for hn in historicalNodeList:
+                    if hn.lookup(segment) == True:
+	    	        replicacount += 1
 
-	sorted_dict = sorted(replicationmap.items(), key=operator.itemgetter(1), reverse=True)
-        print sorted_dict
+	    	if replicacount >= 2:
+		    continue
 
+                if segment not in querysegmentmap:
+                    querysegmentmap[segment] = 0
+                querysegmentmap[segment] += count
+
+	sorted_dict = sorted(querysegmentmap.items(), key=operator.itemgetter(1), reverse=True)
+	
 	numreplicate = math.ceil(percentreplicate * len(sorted_dict))
+	print "Replicate Segments" 
+	print sorted_dict
+	print "Number to replicated: %d" % numreplicate
+
 	replicatedcount = 0
 	for segment,count in sorted_dict:
-            for _ in xrange(replicationFactor - 1):
-		historicalNodeIndex = self.getNextIndex(segmentList[segment - 1], historicalNodeList)		
-		historicalNodeList[historicalNodeIndex-1].add_replica(segmentList[segment - 1])
+            if self.isReplicated(segment, historicalNodeList) == False:
+                for _ in xrange(replicationFactor - 1):
+		    historicalNodeIndex = self.getNextIndex(deepStorage[segment - 1], historicalNodeList)		
+		    historicalNodeList[historicalNodeIndex-1].add_replica(deepStorage[segment - 1])
 	    replicatedcount += 1
 	    if replicatedcount >= numreplicate:
 		break
 
 	return (replicationFactor - 1) * numreplicate
+
+    def isReplicated(self, segment, historicalNodeList):
+        replicacount = 0
+        for node in historicalNodeList:
+            if node.lookup(segment) == True:
+                replicacount += 1
+
+        return (replicacount > 1)
 
 #TODO: getNextIndex should not return a hn index which contains the segment already
 #class Random(PlacementStrategy):
@@ -76,7 +96,7 @@ class DruidCostBased(PlacementStrategy):
 	return basecost * datasourcepenalty * recencypenalty * gappenalty
 
 class RandomBallBased(object):
-    def placeSegments(self, segmentList, historicalNodeList, queryList):
+    def placeSegments(self, segmentList, deepStorage, historicalNodeList, queryList):
 	count = 0
 	allquerysegments = list()
 	for query in queryList:
@@ -85,31 +105,38 @@ class RandomBallBased(object):
         		hnindex = numpy.random.random_integers(1, len(historicalNodeList))
 			if historicalNodeList[hnindex - 1].lookup(segment) == False:
 				count += 1
-			historicalNodeList[hnindex - 1].add_segment(segmentList[segment - 1])
+			historicalNodeList[hnindex - 1].add_segment(deepStorage[segment - 1])
 
 	uniqueset = set(allquerysegments)
 	return (count,len(uniqueset))
 
-    def replicateSegments(self, segmentList, replicationFactor, historicalNodeList, queryList):
+    def replicateSegments(self, deepStorage, percentReplicate, replicationFactor, historicalNodeList, queryList):
 	return 0
 
 class BestFit(object):
-    def placeSegments(self, segmentList, historicalNodeList, queryList):
-	segmentmap = dict()
-	segmentcount = len(segmentList)
-	for i in xrange(1,segmentcount + 1):
-		segmentmap[i] = 0
-
+    def placeSegments(self, segmentList, deepStorage, historicalNodeList, queryList):
+	querysegmentmap = dict()
 	totalslots = 0
 	allquerysegments = list()
 	for query in queryList:
-		allquerysegments.extend(query.segmentList)
-		for segment in query.segmentList:
-			segmentmap[segment] += 1
-			totalslots += 1
+	    segmentcountmap = query.getSegmentCount()
+	    allquerysegments.extend(query.segmentList)
+	    for segment,count in segmentcountmap.items():
+	    	replicacount = 0
+	    	for hn in historicalNodeList:
+                    if hn.lookup(segment) == True:
+	    	        replicacount += 1
+			break
 
-	filtermap = dict(filter(lambda x: x[1] != 0, segmentmap.items()))
-	sorted_dict = sorted(filtermap.items(), key=operator.itemgetter(1), reverse=True)
+	    	if replicacount >= 1:
+		    continue
+
+                if segment not in querysegmentmap:
+                    querysegmentmap[segment] = 0
+                querysegmentmap[segment] += count
+		totalslots += count
+
+	sorted_dict = sorted(querysegmentmap.items(), key=operator.itemgetter(1), reverse=True)
 
 	historicalnodecount = len(historicalNodeList)
 	slotsperhn = math.ceil(float(totalslots) / historicalnodecount)
@@ -121,12 +148,12 @@ class BestFit(object):
 		#print key,":",val
 		while val > 0:
 			if val >= capacity:
-				historicalNodeList[hnindex].add_segment(segmentList[key - 1])
+				historicalNodeList[hnindex].add_segment(deepStorage[key - 1])
 				val = val - capacity
 				hnindex = hnindex + 1
 				capacity = slotsperhn
 			else:
-				historicalNodeList[hnindex].add_segment(segmentList[key - 1])
+				historicalNodeList[hnindex].add_segment(deepStorage[key - 1])
 				capacity = capacity - val
 				val = 0
 			numsegment += 1
@@ -134,5 +161,5 @@ class BestFit(object):
 	uniqueset = set(allquerysegments)
 	return (numsegment,len(uniqueset))
 
-    def replicateSegments(self, segmentList, replicationFactor, historicalNodeList, queryList):
+    def replicateSegments(self, segmentList, percentReplicate, replicationFactor, historicalNodeList, queryList):
 	return 0

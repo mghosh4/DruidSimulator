@@ -52,19 +52,14 @@ def runExperiment(historicalNodeCount, segmentList, percentreplicate, replicatio
 	
 	#Placing Segments
 	print "Placing Segments"
-	avgreplication = Coordinator.placeSegmentsAndReplicas(segmentList, percentreplicate, replicationFactor, historicalnodelist, queryList, placementStrategy)
+	avgreplication = Coordinator.placeSegmentsAndReplicas(segmentList, segmentList, percentreplicate, replicationFactor, historicalnodelist, queryList, placementStrategy)
 	Coordinator.printCurrentPlacement(historicalnodelist)
 	print("%s,%s,%f Average Replication: %f" % (placementStrategy, routingStrategy, percentreplicate, avgreplication))
 	
 	#Calculating Scores
 	print "Routing Queries"
-	timetaken = Broker.routeQueries(queryList, historicalnodelist, routingStrategy, segmentcount)
+	timetaken = Broker.routeQueries(queryList, historicalnodelist, routingStrategy, segmentcount, 0)
 	print("%s,%s,%f Overall Completion Time: %d" % (placementStrategy, routingStrategy, percentreplicate, timetaken))
-
-#def runExperimentThread(threads, historicalNodeCount, segmentList, replicationFactor, queryList, placementStrategy, routingStrategy):
-#        thread = threading.Thread(target=runExperiment, args=(historicalnodecount, segmentlist, replicationfactor, querylist, placementstrategy, routingstrategy,))
-#        threads.append(thread)
-#        thread.start()
 
 configfile = checkAndReturnArgs(sys.argv)
 config = getConfig(configfile)

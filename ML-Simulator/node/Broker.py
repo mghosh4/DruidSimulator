@@ -6,6 +6,6 @@ from Node import Node
 class Broker(Node):     
 	
 	@staticmethod
-	def routeQueries(queryList, historicalNodeList, placementStrategy, segmentcount):
+	def routeQueries(queryList, historicalNodeList, placementStrategy, segmentcount, startTime):
 		strategy = RoutingFactory.createRoutingStrategy(placementStrategy)
-		return strategy.routeQueries(queryList, historicalNodeList, segmentcount)
+		return strategy.routeQueries(queryList, historicalNodeList, segmentcount, startTime)

@@ -1,12 +1,12 @@
 #!/bin/bash
 
 source "config/default.conf"
-mkdir logs/historicalnodecount
+mkdir logs/queryperinterval
 
-for count in ${historicalnodecount[@]}
+for interval in ${queryperinterval[@]}
 do
-	echo "Running experiment for:" $count
-	mkdir logs/historicalnodecount/$count
+	echo "Running experiment for:" $interval
+	mkdir logs/queryperinterval/$interval
 	{
 		echo "segmentcount=$segmentcount"
 		echo "preloadsegmenr=$preloadsegment"
@@ -15,13 +15,13 @@ do
 		echo "querysizedistribution=${querysizedistribution[0]}"
 		echo "queryminsize=$queryminsize"
 		echo "querymaxsize=$querymaxsize"
-		echo "queryperinterval=${queryperinterval[0]}"
-		echo "historicalnodecount=$count"
+		echo "queryperinterval=$interval"
+		echo "historicalnodecount=${historicalnodecount[0]}"
 		echo "replicationfactor=$replicationfactor"
 		echo "percentreplicate=${percentreplicate[0]}"
-	} > logs/historicalnodecount/"$count"/tmp_"$count".conf
+	} > logs/queryperinterval/"$interval"/tmp_"$interval".conf
 
-	python DynamicMain.py logs/historicalnodecount/"$count"/tmp_"$count".conf > logs/historicalnodecount/"$count"/run_"$count".log &
+	python DynamicMain.py logs/queryperinterval/"$interval"/tmp_"$interval".conf > logs/queryperinterval/"$interval"/run_"$interval".log &
 done
 
 wait

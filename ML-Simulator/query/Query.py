@@ -1,9 +1,13 @@
 class Query(object):
-	def __init__(self):
+	def __init__(self, index):
+		self.index = index
 		self.segmentList = list()
 		
-	def info(self):
-		return ', '.join(str(x) for x in self.segmentList)
+	def show(self):
+		print "Query %d: %s" % (self.index, ', '.join(str(x) for x in self.segmentList))
+
+	def getID(self):
+		return self.index
 
 	def add(self, segment):
 		self.segmentList.append(segment)

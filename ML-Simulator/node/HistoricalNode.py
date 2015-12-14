@@ -2,39 +2,63 @@ from Node import Node
 
 class HistoricalNode(Node):
 	def __init__(self, id):
-		self.segmentlist = list()
-		self.replicalist = list()
+		self.segmentlist = dict()
+		self.replicacount = dict()
+		self.querytime = list()
+		self.computeEndTime = 0
 		self.id = id
 
 	def getID(self):
 	        return self.id
 			
 	def add_segment(self, segment):
-		self.segmentlist.append(segment)
+		if segment.time not in self.replicacount:
+			self.segmentlist[segment.time] = segment
+			self.replicacount[segment.time] = 1
+		else:
+			self.replicacount[segment.time] += 1
+
 		
 	def add_replica(self, segment):
-		self.replicalist.append(segment)
-	
+		if segment.time not in self.replicacount:
+			self.segmentlist[segment.time] = segment
+			self.replicacount[segment.time] = 1
+		else:
+			self.replicacount[segment.time] += 1
+
 	def queue_size(self):
-		return len(self.segmentlist)
+		return sum(self.replicacount.values())
 	
-	def replica_size(self):
-		return len(self.replicalist)	
-		
 	def lookup(self, time):
-		for segment in self.segmentlist:
-			if segment.time == time:
-				return True
+		if time in self.replicacount:
+			return True
 	
 		return False
 
 	def getSegmentAndReplicaList(self):
-	    	allsegmentlist = list(self.segmentlist)
-		allsegmentlist.extend(self.replicalist)
+	    	allsegmentlist = list()
+		for key, value in self.replicacount.iteritems():
+			for _ in xrange(value):
+				allsegmentlist.append(self.segmentlist[key])
 	    	return allsegmentlist
 
+	def getReplicaCount(self):
+		return self.replicacount
+
 	def printSegmentList(self):
-		print "Historical Node %d primary" % self.id
-		print ', '.join(x.info() for x in self.segmentlist)	
-		print "Historical Node %d replica" % self.id
-		print ', '.join(x.info() for x in self.replicalist)
+		print "Historical Node %d" % self.id
+		print ', '.join(x.info() for x in self.getSegmentAndReplicaList())	
+	
+	def printQueryList(self):
+		print "Historical Node %d" % self.id
+		print self.querytime
+	
+	def routeQuery(self, query, time):
+		if time <= self.computeEndTime:
+			self.computeEndTime += 1
+		else:
+			self.computeEndTime = time
+		self.querytime.append((self.computeEndTime, query.getID()))
+
+	def computeEndsAt(self):
+		return self.computeEndTime

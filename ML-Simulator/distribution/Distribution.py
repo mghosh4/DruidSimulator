@@ -11,8 +11,8 @@ class Zipfian(object):
 	def generateDistribution(self, minSample, maxSample, numSamples):
 		shape = 1.2   # the distribution shape parameter, also known as `a` or `alpha`
 		zipfsample = self.randZipf(maxSample - minSample + 1, shape, numSamples)
-		print "Zipf List"
-		Utils.printlist(zipfsample)
+		#print "Zipf List"
+		#Utils.printlist(zipfsample)
 
 		return [ x + minSample for x in zipfsample ]
 

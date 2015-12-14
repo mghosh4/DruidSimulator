@@ -2,18 +2,22 @@
 import os
 class ParseConfig:
 	def __init__(self, configFilePath):
-		self.segmentcount = 10
-		self.querycount = 5
-		self.qsegdistrib = "uniform"
-		self.qsizedistrib = "uniform"
+		self.segmentcount = 30
+		self.preloadsegment = 10
+		self.querycount = 200
+		self.qsegdistrib = "latest"
+		self.qsizedistrib = "zipfian"
 		self.queryminsize = 3
-		self.querymaxsize = 7
+		self.querymaxsize = 20
+		self.queryperinterval = 10
 		self.historicalnodecount = 3
-		self.placementstrategy = "random"
+		self.placementstrategy = "druidcostbased"
+		self.routingstrategy = "chooseleastloaded"
 		self.replicationfactor = 3
 		self.percentreplicate = 0.3
 
-		self.parseConfigFile(configFilePath)
+		if configFilePath is not  None:
+			self.parseConfigFile(configFilePath)
 
 	def parseConfigFile(self, configFilePath):
 		with open(configFilePath) as f:
@@ -27,6 +31,8 @@ class ParseConfig:
 				
 				if key == "segmentcount":
 					self.segmentcount = int(value)
+				if key == "preloadsegment":
+					self.preloadsegment = int(value)
 				elif key == "querycount":
 					self.querycount = int(value)
 				elif key == "querysegmentdistribution":
@@ -37,10 +43,14 @@ class ParseConfig:
 					self.queryminsize = int(value)
 				elif key == "querymaxsize":
 					self.querymaxsize = int(value)
+				elif key == "queryperinterval":
+					self.queryperinterval = int(value)
 				elif key == "historicalnodecount":
 					self.historicalnodecount = int(value)
 				elif key == "placementstrategy":
 					self.placementstrategy = value
+				elif key == "routingstrategy":
+					self.routingstrategy = value
 				elif key == "replicationfactor":
 					self.replicationfactor = int(value)
 				elif key == "percentreplicate":
@@ -48,6 +58,9 @@ class ParseConfig:
 
 	def getSegmentCount(self):
 		return self.segmentcount
+
+	def getPreLoadSegment(self):
+		return self.preloadsegment
 
 	def getQueryCount(self):
 		return self.querycount
@@ -64,11 +77,17 @@ class ParseConfig:
 	def getQueryMaxSize(self):
 		return self.querymaxsize
 
+	def getQueryPerInterval(self):
+		return self.queryperinterval
+
 	def getHistoricalNodeCount(self):
 		return self.historicalnodecount
 
 	def getPlacementStrategy(self):
 		return self.placementstrategy
+
+	def getRoutingStrategy(self):
+		return self.routingstrategy
 
 	def getReplicationFactor(self):
 		return self.replicationfactor
@@ -79,12 +98,15 @@ class ParseConfig:
 	def printConfig(self):
 		print "Config details"
 		print "Segment Count : %d" % self.getSegmentCount()
+		print "Pre Load Segment Count : %d" % self.getPreLoadSegment()
 		print "Query Count : %d" % self.getQueryCount()
 		print "Query Segment Distribution : " + self.getQuerySegmentDistribution()
 		print "Query Size Distribution : " + self.getQuerySizeDistribution()
 		print "Minimum Query Size : %d" % self.getQueryMinSize()
 		print "Maximum Query Size : %d" % self.getQueryMaxSize()
+		print "Query Per Interval : %d" % self.getQueryPerInterval()
 		print "Historical Node Count : %d" % self.getHistoricalNodeCount()
 		print "Placement Strategy : " + self.getPlacementStrategy()
+		print "Routing Strategy : " + self.getRoutingStrategy()
 		print "Replication Factor : %d" % self.getReplicationFactor()
 		print "Percent Replicate : %f" % self.getPercentReplicate()
