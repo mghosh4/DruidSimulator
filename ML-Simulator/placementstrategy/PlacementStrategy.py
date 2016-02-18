@@ -113,7 +113,7 @@ class RandomBallBased(object):
     def replicateSegments(self, deepStorage, percentReplicate, replicationFactor, historicalNodeList, queryList):
 	return 0
 
-class BestFit(object):
+class BestFit(PlacementStrategy):
     def placeSegments(self, segmentList, deepStorage, historicalNodeList, queryList):
 	querysegmentmap = dict()
 	totalslots = 0
@@ -160,6 +160,35 @@ class BestFit(object):
 
 	uniqueset = set(allquerysegments)
 	return (numsegment,len(uniqueset))
+    
+    def getNextIndex(self, segment, historicalNodeList):
+        lowestcost = sys.maxsize
+	mincostnode = -1
+        for hn in historicalNodeList:
+	    cost = 0
+	    for hnsegment in hn.getSegmentAndReplicaList():
+		cost += self.calculateDruidCost(segment, hnsegment)
+            if lowestcost > cost:
+                lowestcost = cost
+                mincostnode = hn.getID()
 
-    def replicateSegments(self, segmentList, percentReplicate, replicationFactor, historicalNodeList, queryList):
-	return 0
+        return mincostnode
+
+    def calculateDruidCost(self, newsegment, hnsegment):
+	if newsegment.time == hnsegment.time:
+		return sys.maxsize
+
+	basecost = min(newsegment.size, hnsegment.size)
+	datasourcepenalty = 1
+	recencypenalty = 1
+	gappenalty = 1
+	if newsegment.time < Utils.RECENCY_THRESHOLD and hnsegment.time < Utils.RECENCY_THRESHOLD:
+		recencypenalty = 2
+
+	if newsegment.time - hnsegment.time < Utils.GAP_THRESHOLD:
+		gappenalty = 2 - (newsegment.time - hnsegment.time)/Utils.GAP_THRESHOLD
+
+	return basecost * datasourcepenalty * recencypenalty * gappenalty
+
+#    def replicateSegments(self, segmentList, percentReplicate, replicationFactor, historicalNodeList, queryList):
+#	return 0
