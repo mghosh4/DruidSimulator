@@ -1,9 +1,9 @@
+from collections import Counter
 from Node import Node
 
 class HistoricalNode(Node):
 	def __init__(self, id):
-		self.segmentlist = dict()
-		self.replicacount = dict()
+		self.segmentCount = Counter()
 		self.querytime = list()
 		self.computeEndTime = 0
 		self.id = id
@@ -11,39 +11,35 @@ class HistoricalNode(Node):
 	def getID(self):
 	        return self.id
 			
-	def add_segment(self, segment):
-		if segment.time not in self.replicacount:
-			self.segmentlist[segment.time] = segment
-			self.replicacount[segment.time] = 1
-		else:
-			self.replicacount[segment.time] += 1
-
+	def addSegment(self, segment):
+		self.segmentCount[segment] += 1
 		
-	def add_replica(self, segment):
-		if segment.time not in self.replicacount:
-			self.segmentlist[segment.time] = segment
-			self.replicacount[segment.time] = 1
-		else:
-			self.replicacount[segment.time] += 1
+	def removeSegment(self, segment):
+		if self.segmentCount[segment] > 0:
+			self.segmentCount[segment] -= 1
 
-	def queue_size(self):
-		return sum(self.replicacount.values())
+	def numReplicasPlaced(self):
+		return sum(self.segmentCount.values())
 	
-	def lookup(self, time):
-		if time in self.replicacount:
-			return True
-	
+	def lookupBySegment(self, segment):
+		return self.segmentCount[segment] > 0
+
+	def lookupByTime(self, time):
+		for segment in self.segmentCount.iterkeys():
+			if time == segment.getTime():
+				return self.lookupBySegment(segment)
+
 		return False
 
 	def getSegmentAndReplicaList(self):
 	    	allsegmentlist = list()
-		for key, value in self.replicacount.iteritems():
-			for _ in xrange(value):
-				allsegmentlist.append(self.segmentlist[key])
+		for key, value in self.segmentCount.iteritems():
+		    for _ in xrange(value):
+			allsegmentlist.append(key)
 	    	return allsegmentlist
 
-	def getReplicaCount(self):
-		return self.replicacount
+	def getSegmentCounts(self):
+		return self.segmentCount
 
 	def printSegmentList(self):
 		print "Historical Node %d" % self.id

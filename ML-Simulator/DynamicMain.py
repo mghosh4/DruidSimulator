@@ -31,11 +31,12 @@ def getConfig(configFile):
 	configfilePath = configFile
 	return ParseConfig(configfilePath)
 	
-def createStrategyCombinations(historicalNodeCount):
+def createDynamicStrategyCombinations(historicalNodeCount):
     strategylist = list()
-    for placementstrategy in ['druidcostbased', 'bestfit']:
-        for routingstrategy in ['chooseleastloaded']:
-            strategylist.append(Strategy(historicalNodeCount, placementstrategy, routingstrategy))
+    placementstrategy = 'druidcostbased'
+    routingstrategy = 'chooseleastloaded'
+    for replicationstrategy in ['fixed', 'tiered', 'adaptive', 'bestfit-d']:
+        strategylist.append(Strategy(historicalNodeCount, placementstrategy, replicationstrategy, routingstrategy))
 
     return strategylist
 
@@ -53,17 +54,14 @@ queryminsize = config.getQueryMinSize()
 querymaxsize = config.getQueryMaxSize()
 queryperinterval = config.getQueryPerInterval()
 historicalnodecount = config.getHistoricalNodeCount()
-placementstrategy = config.getPlacementStrategy()
-routingstrategy = config.getRoutingStrategy()
 replicationfactor = config.getReplicationFactor()
-percentreplicate = config.getPercentReplicate()
 
 ######### DYNAMIC SIMULATION #############
 print "Dynamic Simulation"
 
 #Creating Historical Nodes
 print "Creating Strategy Combinations"
-dynamicstrategies = createStrategyCombinations(historicalnodecount)
+dynamicstrategies = createDynamicStrategyCombinations(historicalnodecount)
 
 deepstorage = list()
 segmentlist = list()
@@ -118,37 +116,39 @@ for time in xrange(totaltime):
     #Placing Segments
     if time % coordinatorinterval == 0:
         for strategy in dynamicstrategies:
-            strategy.placeSegments(segmentlist, deepstorage, percentreplicate, replicationfactor)
+            strategy.placeSegments(segmentlist, deepstorage, time)
         segmentlist = []
+
+        #Print Statistics
+        for strategy in dynamicstrategies:
+            strategy.printStatistics(time)
 
 for strategy in dynamicstrategies:
     #Placing Segments
-    strategy.placeSegments(segmentlist, deepstorage, percentreplicate, replicationfactor)
+    strategy.placeSegments(segmentlist, deepstorage, time)
     
     #Routing Queries
     strategy.routeQueries(list(), segmentrunningcount, totaltime)
 
 #Print Statistics
 for strategy in dynamicstrategies:
-    strategy.printStatistics()
+    strategy.printStatistics(time)
 
 ######### STATIC SIMULATION #############
 print "Static Simulation"
 
 #Creating Historical Nodes
 print "Creating Strategy Combinations"
-staticstrategies = createStrategyCombinations(historicalnodecount)
+staticstrategy = Strategy(historicalnodecount, 'druidcostbased', 'bestfit-s', 'chooseleastloaded')
 
-for strategy in staticstrategies:
-    #Routing Queries
-    strategy.routeQueries(allquerylist, segmentrunningcount, 0)
+#Routing Queries
+staticstrategy.routeQueries(allquerylist, segmentrunningcount, 0)
 
-    #Placing Segments
-    strategy.placeSegments(deepstorage, deepstorage, percentreplicate, replicationfactor)
+#Placing Segments
+staticstrategy.placeSegments(deepstorage, deepstorage, 0)
 
-    #Routing Queries
-    strategy.routeQueries(list(), segmentrunningcount, 0)
+#Routing Queries
+staticstrategy.routeQueries(list(), segmentrunningcount, 0)
 
 #Print Statistics
-for strategy in staticstrategies:
-    strategy.printStatistics()
+staticstrategy.printStatistics(0)

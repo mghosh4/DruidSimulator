@@ -7,18 +7,18 @@ class DruidStrategy(object):
 	def routeQueries(self, queryList, historicalNodeList, segmentCount, startTime):
 		segmentmap = dict()
 		for query in queryList:
-		    segmentcountmap = query.getSegmentCount()
-		    for segment,count in segmentcountmap.items():
-			if segment not in segmentmap:
+		    segmenttimecount = query.getSegmentTimeCount()
+		    for time,count in segmenttimecount.items():
+			if time not in segmentmap:
 			    for node in historicalNodeList:
-			    	if node.lookup(segment) == True:
-				    if segment not in segmentmap:
-					segmentmap[segment] = list()
-				    segmentmap[segment].append(node)
+			    	if node.lookupByTime(time) == True:
+				    if time not in segmentmap:
+					segmentmap[time] = list()
+				    segmentmap[time].append(node)
 
 		for query in queryList:
-			for segment in query.segmentList:
-				hnode = self.getHistoricalNode(segmentmap, segment, historicalNodeList)
+			for time in query.segmentTimeList:
+				hnode = self.getHistoricalNode(segmentmap, time, historicalNodeList)
 				hnode.routeQuery(query, startTime)
 
 		maxtime = 0
@@ -31,35 +31,17 @@ class DruidStrategy(object):
 		return maxtime
 
 class Random(DruidStrategy):
-	def getHistoricalNode(self, segmentMap, segment, historicalNodeList):
-		numreplicas = len(segmentMap[segment])
+	def getHistoricalNode(self, segmentMap, time, historicalNodeList):
+		numreplicas = len(segmentMap[time])
 		index = numpy.random.random_integers(1, numreplicas)
-		return segmentMap[segment][index - 1]
+		return segmentMap[time][index - 1]
 		
 class ChooseLeastLoaded(DruidStrategy):
-	def getHistoricalNode(self, segmentMap, segment, historicalNodeList):
+	def getHistoricalNode(self, segmentMap, time, historicalNodeList):
 		leastload = sys.maxint
 		leastloadednode = 0
-		for histnode in segmentMap[segment]:
+		for histnode in segmentMap[time]:
 			if histnode.computeEndsAt() < leastload:
 				leastload = histnode.computeEndsAt()
 				leastloadednode = histnode
 		return leastloadednode
-		
-class RandomBallBased(object):
-	def routeQueries(self, queryList, historicalNodeList, segmentCount):
-		maxLoad = 0
-		for node in historicalNodeList:
-			if maxLoad < node.queue_size():
-				maxLoad = node.queue_size()
-
-		return maxLoad
-		
-class BestFit(object):
-	def routeQueries(self, queryList, historicalNodeList, segmentCount):
-		totalslots = 0
-		for query in queryList:
-			for segment in query.segmentList:
-				totalslots += 1
-
-		return math.ceil(float(totalslots) / len(historicalNodeList))

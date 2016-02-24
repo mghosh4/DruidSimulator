@@ -1,6 +1,7 @@
 import os,sys
 sys.path.append(os.path.abspath('node'))
 sys.path.append(os.path.abspath('utilities'))
+from collections import Counter
 
 from HistoricalNode import HistoricalNode
 from Coordinator import Coordinator
@@ -8,12 +9,14 @@ from Broker import Broker
 from Utils import Utils
 
 class Strategy(object):
-	def __init__(self, historicalNodeCount, placementStrategy, routingStrategy):
+	def __init__(self, historicalNodeCount, placementStrategy, replicationStrategy, routingStrategy):
 		self.placementStrategy = placementStrategy
+		self.replicationStrategy = replicationStrategy
 		self.routingStrategy = routingStrategy
 		self.historicalNodeCount = historicalNodeCount
 		self.queryList = list()
 		self.historicalNodeList = self.createHistoricalNodes(self.historicalNodeCount)
+		self.segmentReplicaCount = Counter()
 
 	def createHistoricalNodes(self, historicalNodeCount):
 		historicalnodelist = list()
@@ -21,40 +24,41 @@ class Strategy(object):
 			historicalnodelist.append(HistoricalNode(i+1))
 		return historicalnodelist
 
-	def log(self, message):
-		print "%s,%s: %s" % (self.placementStrategy, self.routingStrategy, message)
+	def log(self, time, message):
+		print "%d, %s: %s" % (time, self.replicationStrategy, message)
 
-	def printStatistics(self):
-    		replicalist = set()
+	def printStatistics(self, time):
+    		replicalist = Counter()
     		numreplicas = 0
     		maxtime = 0
     		for node in self.historicalNodeList:
-    		    self.log("Compute Ends for %d at %d" % (node.getID(), node.computeEndsAt()))
+    		    self.log(time, "Compute Ends for %d at %d" % (node.getID(), node.computeEndsAt()))
     		    if node.computeEndsAt() >= maxtime:
     		        maxtime = node.computeEndsAt()
 
-    		    nodereplicamap = node.getReplicaCount()
-    		    numreplicas += sum(nodereplicamap.values())
-    		    for (key, value) in nodereplicamap.items():
-    		        replicalist.add(key)
+                    replicalist += node.getSegmentCounts()
 
-    		self.log("Average Replication Factor: %f" % (float(numreplicas) / len(replicalist)))
-   		self.log("Overall Completion Time: %d" % maxtime)
+                totalreplicas = sum(replicalist.values())
+    		self.log(time, "Total Number of Replicas: %d" % totalreplicas)
+    		self.log(time, "Average Replication Factor: %f" % (float(totalreplicas) / len(replicalist)))
+   		self.log(time, "Overall Completion Time: %d" % maxtime)
 
         def findRoutableQueries(self, candidateList, historicalNodeList):
             routinglist = list()
             querylist = list()
         
-            loadedsegments = list()
+            loadedsegments = Counter()
             for node in historicalNodeList:
-                loadedsegments.extend(node.getReplicaCount().keys())
+                loadedsegments += node.getSegmentCounts()
         
-            uniquesegments = set(loadedsegments)
+            uniquetimes = list()
+            for segment in loadedsegments.keys():
+                uniquetimes.append(segment.getTime())
         
             for candidate in candidateList:
                 placed = True
-                for segment in candidate.segmentList:
-                    if segment not in uniquesegments:
+                for time in candidate.segmentTimeList:
+                    if time not in uniquetimes:
                         placed = False
                         break
                 if placed == False:
@@ -67,7 +71,7 @@ class Strategy(object):
 	def routeQueries(self, newList, segmentRunningCount, time):
 		self.queryList.extend(newList)
 
-    		self.log("Routing Queries")
+    		self.log(time, "Routing Queries")
     		(routinglist, self.queryList) = self.findRoutableQueries(self.queryList, self.historicalNodeList)
     		if len(routinglist) > 0:
     		    Utils.printQueryList(routinglist)
@@ -75,8 +79,8 @@ class Strategy(object):
 		    Utils.printQueryAssignment(self.historicalNodeList)
     		    #self.log("Overall Completion Time: %d" % timetaken)
 
-        def placeSegments(self, segmentList, deepStorage, percentReplicate, replicationFactor):
-		self.log("Placing Segments")
-		Coordinator.placeSegmentsAndReplicas(segmentList, deepStorage, percentReplicate, replicationFactor, self.historicalNodeList, self.queryList, self.placementStrategy)
+        def placeSegments(self, segmentList, deepStorage, time):
+		self.log(time, "Placing Segments")
+		Coordinator.placeSegmentsAndReplicas(segmentList, deepStorage, self.historicalNodeList, self.queryList, self.placementStrategy, self.replicationStrategy, self.segmentReplicaCount)
 		Utils.printSegmentPlacement(self.historicalNodeList)
 		#self.log("Average Replication: %f" % avgreplication)

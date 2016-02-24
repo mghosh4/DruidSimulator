@@ -1,22 +1,18 @@
+from collections import Counter
+
 class Query(object):
 	def __init__(self, index):
 		self.index = index
-		self.segmentList = list()
+		self.segmentTimeList = Counter()
 		
 	def show(self):
-		print "Query %d: %s" % (self.index, ', '.join(str(x) for x in self.segmentList))
+		print "Query %d: %s" % (self.index, ', '.join(str(x) for x in self.segmentTimeList.iterkeys()))
 
 	def getID(self):
 		return self.index
 
 	def add(self, segment):
-		self.segmentList.append(segment)
+		self.segmentTimeList[segment] += 1
 
-	def getSegmentCount(self):
-		segmentcountmap = dict()
-		for segment in self.segmentList:
-                    if segment not in segmentcountmap:
-                        segmentcountmap[segment] = 0
-		    segmentcountmap[segment] += 1
-
-		return segmentcountmap
+	def getSegmentTimeCount(self):
+		return self.segmentTimeList

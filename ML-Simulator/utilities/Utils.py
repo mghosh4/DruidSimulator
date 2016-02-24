@@ -8,6 +8,10 @@ class Utils(object):
 		print ', '.join(str(x) for x in listforprint)
 
 	@staticmethod
+	def printSegmentList(segmentList):
+		print ', '.join(x.info() for x in segmentList)
+
+	@staticmethod
 	def printQueryList(queryList):
 		for query in queryList:
 			query.show()
