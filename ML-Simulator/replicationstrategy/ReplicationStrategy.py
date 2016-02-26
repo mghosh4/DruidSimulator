@@ -83,12 +83,23 @@ class BestFit(object):
         for (key, value) in segmenttimecount.items():
             maxheap.put((value, key))
 
+	expectedCount = Counter()
         while not maxheap.empty():
             (val, key) = maxheap.get()
             valleft = self.bestfit(val, nodecapacities)
+            expectedCount[deepStorage[key - 1]] += 1
             if (valleft > 0):
-                insertlist.append(deepStorage[key - 1])
                 maxheap.put((valleft, key))
+
+	for segment in expectedCount.iterkeys():
+	    currentsegmentcount = segmentCount[segment]
+	    expectedsegmentcount = expectedCount[segment]
+            if (currentsegmentcount > expectedsegmentcount):
+                for _ in xrange(0, currentsegmentcount - expectedsegmentcount):
+                    removelist.append(segment)
+            elif (currentsegmentcount < expectedsegmentcount):
+                for _ in xrange(0, expectedsegmentcount - currentsegmentcount):
+                    insertlist.append(segment)
 
         for segment in segmentCount.iterkeys():
             if segment.getTime() not in segmenttimecount and segmentCount[segment] > 0:
