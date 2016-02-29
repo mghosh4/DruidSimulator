@@ -1,4 +1,5 @@
 import os, sys
+import datetime as dt
 from collections import Counter
 sys.path.append(os.path.abspath('placementstrategy'))
 sys.path.append(os.path.abspath('replicationstrategy'))
@@ -12,7 +13,7 @@ from Utils import Utils
 
 class Coordinator(Node):
 	@staticmethod
-	def placeSegmentsAndReplicas(segmentList, deepStorage, historicalNodeList, queryList, placementStrategy, replicationStrategy, segmentCount):
+	def placeSegmentsAndReplicas(segmentList, deepStorage, historicalNodeList, queryList, placementStrategy, replicationStrategy, segmentCount, pastHistory, time):
         	placementstrategy = PlacementFactory.createPlacementStrategy(placementStrategy)
         	replicationstrategy = ReplicationFactory.createReplicationStrategy(replicationStrategy)
 		
@@ -21,7 +22,9 @@ class Coordinator(Node):
 		Coordinator.updateSegmentCount(segmentList, segmentCount)
 
 		## Replicating Segments
-		(insertlist, removelist) = replicationstrategy.replicateSegments(segmentList, deepStorage, historicalNodeList, queryList, segmentCount)
+		t0 = dt.datetime.now()
+		(insertlist, removelist) = replicationstrategy.replicateSegments(segmentList, deepStorage, historicalNodeList, queryList, segmentCount, pastHistory, time)
+		t1 = dt.datetime.now()
 		#Utils.printSegmentList(insertlist)
 		#Utils.printSegmentList(removelist)
 
@@ -29,6 +32,11 @@ class Coordinator(Node):
 	        placementstrategy.placeSegments(insertlist, historicalNodeList)
 		Coordinator.updateSegmentCount(insertlist, segmentCount)
 		Coordinator.removeSegmentCount(removelist, segmentCount)
+
+		numsegmentload = len(insertlist) + len(segmentList)
+		computetime = float((t1 - t0).total_seconds() * 1000)
+
+		return (numsegmentload, computetime)
 
 	@staticmethod
 	def updateSegmentCount(segmentList, segmentCount):

@@ -6,7 +6,7 @@ class SegmentGenerator(object):
 	def populate(start, size):
 		segmentlist = list()
 		for i in xrange(start, start + size):
-			segmentlist.append(Segment(0, i+1, i)) # need to modify
+			segmentlist.append(Segment(0, i, i)) # need to modify
 		return segmentlist
 		
 	@staticmethod

@@ -46,7 +46,6 @@ config = getConfig(configfile)
 config.printConfig()
 
 segmentcount = config.getSegmentCount()
-preloadsegment = config.getPreLoadSegment()
 querycount = config.getQueryCount()
 querysegmentdistribution = config.getQuerySegmentDistribution()
 querysizedistribution = config.getQuerySizeDistribution()
@@ -54,7 +53,6 @@ queryminsize = config.getQueryMinSize()
 querymaxsize = config.getQueryMaxSize()
 queryperinterval = config.getQueryPerInterval()
 historicalnodecount = config.getHistoricalNodeCount()
-replicationfactor = config.getReplicationFactor()
 
 ######### DYNAMIC SIMULATION #############
 print "Dynamic Simulation"
@@ -67,51 +65,43 @@ deepstorage = list()
 segmentlist = list()
 querylist = list()
 allquerylist = list()
-totaltime = querycount / queryperinterval
-segmentcountinrunphase = segmentcount - preloadsegment
-segmentinterval = math.floor(totaltime / segmentcountinrunphase)
+totaltime = segmentcount
 segmentsperinterval = 1
-if segmentinterval == 0:
-    segmentinterval = 1
-    segmentsperinterval = int(math.floor(segmentcountinrunphase / totaltime))
-coordinatorinterval = 5 * segmentinterval
-preloadsegment += totaltime % segmentcountinrunphase
+coordinatorinterval = 10
+segmentrunningcount = 0
+warmuptime = coordinatorinterval
+residualtime = totaltime - warmuptime
+queryperinterval = int(math.ceil(float(querycount) / residualtime))
+totalqueries = queryperinterval * residualtime
+printstatinterval = int(math.ceil(float(totaltime) / 100))
 
 print("Total Time: %d" % totaltime)
-print("Pre Load Segment Count: %d" % preloadsegment)
-print("Segment Count in Run Phase: %d" % segmentcountinrunphase)
-print("Segment Interval: %d" % segmentinterval)
-print("Segments per Interval: %s" % segmentsperinterval)
-
-#### LOAD Phase ####
-print "Pre loading segments and adding to deep storage"
-segmentlist = RealTimeNode.generateSegments(preloadsegment)
-deepstorage.extend(segmentlist)
-segmentrunningcount = len(deepstorage)
-RealTimeNode.printlist(segmentlist)
+print("Query Per Interval: %d" % queryperinterval)
+print("Total Queries: %d" % totalqueries)
 
 #### RUN Phase ####
-for time in xrange(totaltime):
-    #Generating Queries
-    print "Generating Queries"
-    maxquerysize = min(segmentrunningcount, querymaxsize)
-    minquerysize = min(queryminsize, maxquerysize)
-    newquerylist = QueryGenerator.generateQueries(queryperinterval, segmentrunningcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minquerysize, maxquerysize, DistributionFactory.createSizeDistribution(querysizedistribution));
-    Utils.printQueryList(newquerylist)
-    allquerylist.extend(newquerylist)
+for time in xrange(1,totaltime+1):
+    #Generating Segments indexed starting from 1
+    print "Generating Segments and adding to deep storage"
+    newsegments = RealTimeNode.generateSegments(segmentrunningcount+1, segmentsperinterval)
+    RealTimeNode.printlist(newsegments)
+    segmentlist.extend(newsegments)
+    deepstorage.extend(newsegments)
+    Utils.printSegmentList(deepstorage)
+    segmentrunningcount += 1
 
-    #Routing Queries
-    for strategy in dynamicstrategies:
-        strategy.routeQueries(newquerylist, segmentrunningcount, time)
+    if time >= warmuptime:
+        #Generating Queries
+        print "Generating Queries"
+        maxquerysize = min(segmentrunningcount, querymaxsize)
+        minquerysize = min(queryminsize, maxquerysize)
+        newquerylist = QueryGenerator.generateQueries(queryperinterval, segmentrunningcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minquerysize, maxquerysize, DistributionFactory.createSizeDistribution(querysizedistribution));
+        Utils.printQueryList(newquerylist)
+        allquerylist.extend(newquerylist)
 
-    if time % segmentinterval == 0:
-        #Generating Segments indexed starting from 1
-        print "Generating Segments and adding to deep storage"
-        newsegments = RealTimeNode.generateSegments(segmentsperinterval)
-        RealTimeNode.printlist(newsegments)
-        segmentlist.extend(newsegments)
-        deepstorage.extend(newsegments)
-        segmentrunningcount = len(deepstorage)
+        #Routing Queries
+        for strategy in dynamicstrategies:
+            strategy.routeQueries(newquerylist, segmentrunningcount, time)
 
     #Placing Segments
     if time % coordinatorinterval == 0:
@@ -129,6 +119,9 @@ for strategy in dynamicstrategies:
     
     #Routing Queries
     strategy.routeQueries(list(), segmentrunningcount, totaltime)
+
+for strategy in dynamicstrategies:
+    assert strategy.allQueriesRouted()
 
 #Print Statistics
 for strategy in dynamicstrategies:
