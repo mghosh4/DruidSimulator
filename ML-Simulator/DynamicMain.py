@@ -53,6 +53,7 @@ queryminsize = config.getQueryMinSize()
 querymaxsize = config.getQueryMaxSize()
 queryperinterval = config.getQueryPerInterval()
 historicalnodecount = config.getHistoricalNodeCount()
+changequerydistribution = config.getChangeSegmentDistribution()
 
 ######### DYNAMIC SIMULATION #############
 print "Dynamic Simulation"
@@ -75,12 +76,19 @@ queryperinterval = int(math.ceil(float(querycount) / residualtime))
 totalqueries = queryperinterval * residualtime
 printstatinterval = int(math.ceil(float(totaltime) / 100))
 
+newquerysegmentdistribution="uniform"
+halfwaypoint=totaltime/2
+
 print("Total Time: %d" % totaltime)
 print("Query Per Interval: %d" % queryperinterval)
 print("Total Queries: %d" % totalqueries)
 
 #### RUN Phase ####
 for time in xrange(1,totaltime+1):
+
+    if changequerydistribution == "true" and time == halfwaypoint:
+        querysegmentdistribution=newquerysegmentdistribution
+        print "Changing Distribution"
     #Generating Segments indexed starting from 1
     print "Generating Segments and adding to deep storage"
     newsegments = RealTimeNode.generateSegments(segmentrunningcount+1, segmentsperinterval)

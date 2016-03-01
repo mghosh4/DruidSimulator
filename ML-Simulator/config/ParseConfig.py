@@ -15,6 +15,7 @@ class ParseConfig:
 		self.routingstrategy = "chooseleastloaded"
 		self.replicationfactor = 3
 		self.percentreplicate = 0.3
+		self.changesegmentdistribution = "false"
 
 		if configFilePath is not  None:
 			self.parseConfigFile(configFilePath)
@@ -55,6 +56,8 @@ class ParseConfig:
 					self.replicationfactor = int(value)
 				elif key == "percentreplicate":
 					self.percentreplicate = float(value)
+				elif key == "changesegmentdistribution":
+					self.changesegmentdistribution = value
 
 	def getSegmentCount(self):
 		return self.segmentcount
@@ -94,6 +97,9 @@ class ParseConfig:
 
 	def getPercentReplicate(self):
 		return self.percentreplicate
+
+	def getChangeSegmentDistribution(self):
+		return self.changesegmentdistribution
 
 	def printConfig(self):
 		print "Config details"
