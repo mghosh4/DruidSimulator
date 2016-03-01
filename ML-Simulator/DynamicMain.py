@@ -111,7 +111,7 @@ for time in xrange(1,totaltime+1):
 
         #Print Statistics
         for strategy in dynamicstrategies:
-            strategy.printStatistics(time)
+            strategy.printStatistics(time, -1)
 
 for strategy in dynamicstrategies:
     #Placing Segments
@@ -123,9 +123,13 @@ for strategy in dynamicstrategies:
 for strategy in dynamicstrategies:
     assert strategy.allQueriesRouted()
 
+#get query segment count
+querysegmentcount = 0
+for query in allquerylist:
+    querysegmentcount += query.getSegmentCount()
 #Print Statistics
 for strategy in dynamicstrategies:
-    strategy.printStatistics(time)
+    strategy.printStatistics(time, querysegmentcount)
 
 ######### STATIC SIMULATION #############
 print "Static Simulation"
@@ -144,4 +148,4 @@ staticstrategy.placeSegments(deepstorage, deepstorage, 0)
 staticstrategy.routeQueries(list(), segmentrunningcount, 0)
 
 #Print Statistics
-staticstrategy.printStatistics(0)
+staticstrategy.printStatistics(0, -1)

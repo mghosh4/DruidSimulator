@@ -16,3 +16,6 @@ class Query(object):
 
 	def getSegmentTimeCount(self):
 		return self.segmentTimeList
+		
+	def getSegmentCount(self):
+		return len(self.segmentTimeList)
