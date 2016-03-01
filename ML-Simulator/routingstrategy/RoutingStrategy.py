@@ -17,9 +17,13 @@ class DruidStrategy(object):
 				    segmentmap[time].append(node)
 
 		for query in queryList:
+			maxtime = 0
 			for time in query.segmentTimeList:
 				hnode = self.getHistoricalNode(segmentmap, time, historicalNodeList)
-				hnode.routeQuery(query, startTime)
+				endtime = hnode.routeQuery(query, startTime)
+				if endtime > maxtime:
+					maxtime = endtime
+			query.setEndTime(maxtime)
 
 		maxtime = 0
 		target = None

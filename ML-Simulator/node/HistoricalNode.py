@@ -55,6 +55,7 @@ class HistoricalNode(Node):
 		else:
 			self.computeEndTime = time
 		self.querytime.append((self.computeEndTime, query.getID()))
+		return self.computeEndTime
 
 	def computeEndsAt(self):
 		return self.computeEndTime

@@ -2,6 +2,7 @@ import os,sys
 sys.path.append(os.path.abspath('node'))
 sys.path.append(os.path.abspath('utilities'))
 from collections import Counter
+import copy
 
 from HistoricalNode import HistoricalNode
 from Coordinator import Coordinator
@@ -9,37 +10,37 @@ from Broker import Broker
 from Utils import Utils
 
 class Strategy(object):
-    def __init__(self, historicalNodeCount, placementStrategy, replicationStrategy, routingStrategy):
-        self.placementStrategy = placementStrategy
-        self.replicationStrategy = replicationStrategy
-        self.routingStrategy = routingStrategy
-        self.historicalNodeCount = historicalNodeCount
-        self.queryList = list()
-        self.historicalNodeList = self.createHistoricalNodes(self.historicalNodeCount)
-        self.segmentReplicaCount = Counter()
-        self.pastHistory = list()
-        self.queriesrouted = 0
-        self.numsegmentloads = 0
-        self.totalcomputetime = 0
+	def __init__(self, historicalNodeCount, placementStrategy, replicationStrategy, routingStrategy):
+		self.placementStrategy = placementStrategy
+		self.replicationStrategy = replicationStrategy
+		self.routingStrategy = routingStrategy
+		self.historicalNodeCount = historicalNodeCount
+		self.queryList = list()
+		self.historicalNodeList = self.createHistoricalNodes(self.historicalNodeCount)
+		self.segmentReplicaCount = Counter()
+		self.pastHistory = list()
+                self.queriesrouted = 0
+                self.numsegmentloads = 0
+                self.totalcomputetime = 0
+                self.totalcompletiontime = 0
 
-    def createHistoricalNodes(self, historicalNodeCount):
-        historicalnodelist = list()
-        for i in xrange(historicalNodeCount):
-            historicalnodelist.append(HistoricalNode(i+1))
-        return historicalnodelist
+	def createHistoricalNodes(self, historicalNodeCount):
+		historicalnodelist = list()
+		for i in xrange(historicalNodeCount):
+			historicalnodelist.append(HistoricalNode(i+1))
+		return historicalnodelist
 
-    def log(self, time, message):
-        print "%d, %s: %s" % (time, self.replicationStrategy, message)
+	def log(self, time, message):
+		print "%d, %s: %s" % (time, self.replicationStrategy, message)
 
-    def printStatistics(self, time, querysegmentcount):
-            replicalist = Counter()
-            numreplicas = 0
-            maxtime = 0  
-
-            for node in self.historicalNodeList:
-                self.log(time, "Compute Ends for %d at %d" % (node.getID(), node.computeEndsAt()))
-                if node.computeEndsAt() >= maxtime:
-                    maxtime = node.computeEndsAt()
+	def printStatistics(self, time):
+    		replicalist = Counter()
+    		numreplicas = 0
+    		maxtime = 0
+    		for node in self.historicalNodeList:
+    		    self.log(time, "Compute Ends for %d at %d" % (node.getID(), node.computeEndsAt()))
+    		    if node.computeEndsAt() >= maxtime:
+    		        maxtime = node.computeEndsAt()
 
                     replicalist += node.getSegmentCounts()
 
@@ -73,9 +74,9 @@ class Strategy(object):
                         placed = False
                         break
                 if placed == False:
-                    querylist.append(candidate)
+                    querylist.append(copy.copy(candidate))
                 else:
-                    routinglist.append(candidate)
+                    routinglist.append(copy.copy(candidate))
         
             return (routinglist, querylist)
 
