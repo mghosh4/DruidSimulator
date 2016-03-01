@@ -34,51 +34,53 @@ class Strategy(object):
 		print "%d, %s: %s" % (time, self.replicationStrategy, message)
 
 	def printStatistics(self, time, querysegmentcount):
-			replicalist = Counter()
-			numreplicas = 0
-			maxtime = 0
-			for node in self.historicalNodeList:
-				self.log(time, "Compute Ends for %d at %d" % (node.getID(), node.computeEndsAt()))
-				if node.computeEndsAt() >= maxtime:
-					maxtime = node.computeEndsAt()
+		replicalist = Counter()
+		numreplicas = 0
+		maxtime = 0
+		for node in self.historicalNodeList:
+			self.log(time, "Compute Ends for %d at %d" % (node.getID(), node.computeEndsAt()))
+			if node.computeEndsAt() >= maxtime:
+				maxtime = node.computeEndsAt()
 
-					replicalist += node.getSegmentCounts()
+				replicalist += node.getSegmentCounts()
 
-				totalreplicas = sum(replicalist.values())
+			totalreplicas = sum(replicalist.values())
 
-			if querysegmentcount > -1:
-				self.log(time, "Overall Segment Throughput: %f" % (float(querysegmentcount) / float(maxtime)))
+		if querysegmentcount > -1:
+			self.log(time, "Overall Segment Throughput: %f" % (float(querysegmentcount) / float(maxtime)))
 
-			self.log(time, "Total Number Replicas: %d" % totalreplicas)
-			self.log(time, "Average Replication Factor: %f" % (float(totalreplicas) / len(replicalist)))
-			self.log(time, "Number Segment Loads: %d" % self.numsegmentloads)
-			self.log(time, "Total Routing Time: %d" % maxtime)
-			self.log(time, "Total Running Time: %d" % self.totalcomputetime)
+		self.log(time, "Total Number Replicas: %d" % totalreplicas)
+		self.log(time, "Average Replication Factor: %f" % (float(totalreplicas) / len(replicalist)))
+		self.log(time, "Number Segment Loads: %d" % self.numsegmentloads)
+		self.log(time, "Total Routing Time: %d" % maxtime)
+		self.log(time, "Total Running Time: %d" % self.totalcomputetime)
+                if self.queriesrouted > 0:
+                        self.log(time, "Average Completion Time: %f" % (float(self.totalcompletiontime) / float(self.queriesrouted)))
 
 	def findRoutableQueries(self, candidateList, historicalNodeList):
-			routinglist = list()
-			querylist = list()
-		
-			loadedsegments = Counter()
-			for node in historicalNodeList:
-				loadedsegments += node.getSegmentCounts()
-		
-			uniquetimes = list()
-			for segment in loadedsegments.keys():
-				uniquetimes.append(segment.getTime())
-		
-			for candidate in candidateList:
-				placed = True
-				for time in candidate.segmentTimeList:
-					if time not in uniquetimes:
-						placed = False
-						break
-				if placed == False:
-					querylist.append(copy.copy(candidate))
-				else:
-					routinglist.append(copy.copy(candidate))
-		
-			return (routinglist, querylist)
+		routinglist = list()
+		querylist = list()
+	
+		loadedsegments = Counter()
+		for node in historicalNodeList:
+			loadedsegments += node.getSegmentCounts()
+	
+		uniquetimes = list()
+		for segment in loadedsegments.keys():
+			uniquetimes.append(segment.getTime())
+	
+		for candidate in candidateList:
+			placed = True
+			for time in candidate.segmentTimeList:
+				if time not in uniquetimes:
+					placed = False
+					break
+			if placed == False:
+				querylist.append(candidate)
+			else:
+				routinglist.append(copy.copy(candidate))
+	
+		return (routinglist, querylist)
 
 	def routeQueries(self, newList, segmentRunningCount, time):
 		self.queryList.extend(newList)
@@ -90,24 +92,28 @@ class Strategy(object):
 		Utils.printQueryList(routinglist)
 		Broker.routeQueries(routinglist, self.historicalNodeList, self.routingStrategy, segmentRunningCount, time)
 		Utils.printQueryAssignment(self.historicalNodeList)
-				#self.log("Overall Completion Time: %d" % timetaken)
+
+                for query in routinglist:
+                        completiontime = query.getCompletionTime()
+                        assert completiontime > -1
+                        self.totalcompletiontime += completiontime
 
 	def allQueriesRouted(self):
-			if (len(self.queryList) > 0):
-				Utils.printQueryList(self.queryList)
-				segmenttimecount = Counter()
-			for query in self.queryList:
-				segmenttimecount += query.getSegmentTimeCount()
+		if (len(self.queryList) > 0):
+			Utils.printQueryList(self.queryList)
+			segmenttimecount = Counter()
+		for query in self.queryList:
+			segmenttimecount += query.getSegmentTimeCount()
 
-				loadedtimelist = list()
-				for segment in self.segmentReplicaCount.iterkeys():
-					loadedtimelist.append(segment.getTime())
+			loadedtimelist = list()
+			for segment in self.segmentReplicaCount.iterkeys():
+				loadedtimelist.append(segment.getTime())
 
-				for time in segmenttimecount.iterkeys():
-					if time not in loadedtimelist:
-						print time
+			for time in segmenttimecount.iterkeys():
+				if time not in loadedtimelist:
+					print time
 
-			return len(self.queryList) == 0
+		return len(self.queryList) == 0
 
 	def placeSegments(self, segmentList, deepStorage, time):
 		self.log(time, "Placing Segments")
@@ -115,4 +121,3 @@ class Strategy(object):
 		self.numsegmentloads += numloads
 		self.totalcomputetime += computetime
 		Utils.printSegmentPlacement(self.historicalNodeList)
-		#self.log("Average Replication: %f" % avgreplication)
