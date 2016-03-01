@@ -54,6 +54,9 @@ querymaxsize = config.getQueryMaxSize()
 queryperinterval = config.getQueryPerInterval()
 historicalnodecount = config.getHistoricalNodeCount()
 changequerydistribution = config.getChangeSegmentDistribution()
+burstyquery = config.getBurstyQuery()
+burstyquerymultiplier = config.getBurstyQueryMultiplier()
+burstyqueryinterval = config.getBurstyQueryInterval()
 
 ######### DYNAMIC SIMULATION #############
 print "Dynamic Simulation"
@@ -103,7 +106,12 @@ for time in xrange(1,totaltime+1):
         print "Generating Queries"
         maxquerysize = min(segmentrunningcount, querymaxsize)
         minquerysize = min(queryminsize, maxquerysize)
-        newquerylist = QueryGenerator.generateQueries(time, queryperinterval, segmentrunningcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minquerysize, maxquerysize, DistributionFactory.createSizeDistribution(querysizedistribution));
+        numqueries = queryperinterval;
+        if burstyquery == "true":
+            if time%burstyqueryinterval == 0:
+                numqueries = numqueries * burstyquerymultiplier
+        
+        newquerylist = QueryGenerator.generateQueries(time, numqueries, segmentrunningcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minquerysize, maxquerysize, DistributionFactory.createSizeDistribution(querysizedistribution));
         Utils.printQueryList(newquerylist)
         allquerylist.extend(newquerylist)
 

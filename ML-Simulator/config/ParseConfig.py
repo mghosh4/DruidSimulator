@@ -16,6 +16,9 @@ class ParseConfig:
 		self.replicationfactor = 3
 		self.percentreplicate = 0.3
 		self.changesegmentdistribution = "false"
+		self.burstyquery = "false"
+		self.burstyquerymultiplier = 5
+		self.burstyqueryinterval = 3
 
 		if configFilePath is not  None:
 			self.parseConfigFile(configFilePath)
@@ -58,6 +61,12 @@ class ParseConfig:
 					self.percentreplicate = float(value)
 				elif key == "changesegmentdistribution":
 					self.changesegmentdistribution = value
+				elif key == "burstyquery":
+					self.burstyquery = value
+				elif key == "burstyquerymultiplier":
+					self.burstyquerymultiplier = int(value)
+				elif key == "burstyqueryinterval":
+					self.burstyqueryinterval = int(value)
 
 	def getSegmentCount(self):
 		return self.segmentcount
@@ -100,6 +109,15 @@ class ParseConfig:
 
 	def getChangeSegmentDistribution(self):
 		return self.changesegmentdistribution
+
+	def getBurstyQuery(self):
+		return self.burstyquery
+
+	def getBurstyQueryMultiplier(self):
+		return self.burstyquerymultiplier
+
+	def getBurstyQueryInterval(self):
+		return self.burstyqueryinterval
 
 	def printConfig(self):
 		print "Config details"
