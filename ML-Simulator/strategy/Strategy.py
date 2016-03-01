@@ -2,6 +2,7 @@ import os,sys
 sys.path.append(os.path.abspath('node'))
 sys.path.append(os.path.abspath('utilities'))
 from collections import Counter
+import copy
 
 from HistoricalNode import HistoricalNode
 from Coordinator import Coordinator
@@ -21,6 +22,7 @@ class Strategy(object):
                 self.queriesrouted = 0
                 self.numsegmentloads = 0
                 self.totalcomputetime = 0
+                self.totalcompletiontime = 0
 
 	def createHistoricalNodes(self, historicalNodeCount):
 		historicalnodelist = list()
@@ -47,6 +49,8 @@ class Strategy(object):
     		self.log(time, "Average Replication Factor: %f" % (float(totalreplicas) / len(replicalist)))
                 self.log(time, "Number Segment Loads: %d" % self.numsegmentloads)
    		self.log(time, "Total Routing Time: %d" % maxtime)
+                if self.queriesrouted > 0:
+                    self.log(time, "Average Completion Time: %f" % (float(self.totalcompletiontime) / float(self.queriesrouted)))
    		self.log(time, "Total Running Time: %d" % self.totalcomputetime)
 
         def findRoutableQueries(self, candidateList, historicalNodeList):
@@ -68,9 +72,9 @@ class Strategy(object):
                         placed = False
                         break
                 if placed == False:
-                    querylist.append(candidate)
+                    querylist.append(copy.copy(candidate))
                 else:
-                    routinglist.append(candidate)
+                    routinglist.append(copy.copy(candidate))
         
             return (routinglist, querylist)
 
@@ -84,6 +88,11 @@ class Strategy(object):
     		    Utils.printQueryList(routinglist)
     		    Broker.routeQueries(routinglist, self.historicalNodeList, self.routingStrategy, segmentRunningCount, time)
 		    Utils.printQueryAssignment(self.historicalNodeList)
+
+                    for query in routinglist:
+                        completiontime = query.getCompletionTime()
+                        assert completiontime > -1
+                        self.totalcompletiontime += completiontime
     		    #self.log("Overall Completion Time: %d" % timetaken)
 
 	def allQueriesRouted(self):

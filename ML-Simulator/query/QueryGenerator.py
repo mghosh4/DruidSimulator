@@ -5,7 +5,7 @@ class QueryGenerator(object):
 	queryRunningCount = 0
 
 	@staticmethod
-	def generateQueries(numQueries, segmentCount, segmentGenerator, minSize, maxSize, sizeGenerator):
+	def generateQueries(time, numQueries, segmentCount, segmentGenerator, minSize, maxSize, sizeGenerator):
 		querylist = list()
 		segmentlist = segmentGenerator.generateDistribution(1, segmentCount, numQueries)
 		#print "Segment List"
@@ -14,7 +14,7 @@ class QueryGenerator(object):
 		#print "Size List"
 		#Utils.printlist(sizelist)
 		for i in xrange(numQueries):
-			q = Query(QueryGenerator.queryRunningCount)
+			q = Query(QueryGenerator.queryRunningCount, time)
 			QueryGenerator.queryRunningCount += 1
 			startsegment = 0
 			chosensegment = segmentlist[i]

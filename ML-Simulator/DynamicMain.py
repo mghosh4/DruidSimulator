@@ -95,7 +95,7 @@ for time in xrange(1,totaltime+1):
         print "Generating Queries"
         maxquerysize = min(segmentrunningcount, querymaxsize)
         minquerysize = min(queryminsize, maxquerysize)
-        newquerylist = QueryGenerator.generateQueries(queryperinterval, segmentrunningcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minquerysize, maxquerysize, DistributionFactory.createSizeDistribution(querysizedistribution));
+        newquerylist = QueryGenerator.generateQueries(time, queryperinterval, segmentrunningcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minquerysize, maxquerysize, DistributionFactory.createSizeDistribution(querysizedistribution));
         Utils.printQueryList(newquerylist)
         allquerylist.extend(newquerylist)
 
@@ -133,6 +133,9 @@ print "Static Simulation"
 #Creating Historical Nodes
 print "Creating Strategy Combinations"
 staticstrategy = Strategy(historicalnodecount, 'druidcostbased', 'bestfit-s', 'chooseleastloaded')
+
+for query in allquerylist:
+    query.setStartTime(0)
 
 #Routing Queries
 staticstrategy.routeQueries(allquerylist, segmentrunningcount, 0)
