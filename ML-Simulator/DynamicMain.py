@@ -100,18 +100,20 @@ for time in xrange(1,totaltime+1):
     print "Generating Segments and adding to deep storage"
     numsegments = segmentsperinterval
     if burstysegment == True and time % burstysegmentinterval == 0:
+        print "Segment Burst"
         numsegments *= burstysegmentmultiplier
 
     newsegments = RealTimeNode.generateSegments(time, segmentrunningcount+1, numsegments)
     RealTimeNode.printlist(newsegments)
     segmentlist.extend(newsegments)
     deepstorage[time] = newsegments
-    segmentrunningcount += segmentsperinterval
+    segmentrunningcount += numsegments
 
     if time >= warmuptime:
         #Generating Queries
         print "Generating Queries"
         if changequerydistribution == True and time == changedistributionat:
+            print "Distribution Change"
             querysegmentdistribution=newquerysegmentdistribution
         
         maxqueryperiod = min(time, querymaxsize)
@@ -119,6 +121,7 @@ for time in xrange(1,totaltime+1):
 
         numqueries = queryperinterval;
         if burstyquery == True and time % burstyqueryinterval == 0:
+            print "Query Burst"
             numqueries *= burstyquerymultiplier
         
         newquerylist = QueryGenerator.generateQueries(time, numqueries, deepstorage, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minqueryperiod, maxqueryperiod, DistributionFactory.createSizeDistribution(querysizedistribution));
