@@ -7,44 +7,35 @@ class DruidStrategy(object):
 	def routeQueries(self, queryList, historicalNodeList, segmentCount, startTime):
 		segmentmap = dict()
 		for query in queryList:
-		    segmenttimecount = query.getSegmentTimeCount()
-		    for time,count in segmenttimecount.items():
-			if time not in segmentmap:
+		    segmentlist = query.getSegmentList()
+		    for segment in segmentlist.keys():
+			if segment not in segmentmap:
+			    segmentmap[segment] = list()
 			    for node in historicalNodeList:
-			    	if node.lookupByTime(time) == True:
-				    if time not in segmentmap:
-					segmentmap[time] = list()
-				    segmentmap[time].append(node)
+			    	if node.lookupBySegment(segment) == True:
+				    segmentmap[segment].append(node)
 
 		for query in queryList:
 			maxtime = 0
-			for time in query.segmentTimeList:
-				hnode = self.getHistoricalNode(segmentmap, time, historicalNodeList)
+			for segment in query.getSegmentList().keys():
+				hnode = self.getHistoricalNode(segmentmap, segment, historicalNodeList)
 				endtime = hnode.routeQuery(query, startTime)
 				if endtime > maxtime:
 					maxtime = endtime
 			query.setEndTime(maxtime)
 
-		maxtime = 0
-		target = None
-		for node in historicalNodeList:
-			if node.computeEndsAt() >= maxtime:
-				maxtime = node.computeEndsAt()
-				target = node.getID()
-
-		return maxtime
 
 class Random(DruidStrategy):
-	def getHistoricalNode(self, segmentMap, time, historicalNodeList):
-		numreplicas = len(segmentMap[time])
+	def getHistoricalNode(self, segmentMap, segment, historicalNodeList):
+		numreplicas = len(segmentMap[segment])
 		index = numpy.random.random_integers(1, numreplicas)
-		return segmentMap[time][index - 1]
+		return segmentMap[segment][index - 1]
 		
 class ChooseLeastLoaded(DruidStrategy):
-	def getHistoricalNode(self, segmentMap, time, historicalNodeList):
+	def getHistoricalNode(self, segmentMap, segment, historicalNodeList):
 		leastload = sys.maxint
 		leastloadednode = 0
-		for histnode in segmentMap[time]:
+		for histnode in segmentMap[segment]:
 			if histnode.computeEndsAt() < leastload:
 				leastload = histnode.computeEndsAt()
 				leastloadednode = histnode

@@ -13,17 +13,13 @@ from Utils import Utils
 
 class Coordinator(Node):
 	@staticmethod
-	def placeSegmentsAndReplicas(segmentList, deepStorage, historicalNodeList, queryList, placementStrategy, replicationStrategy, segmentCount, pastHistory, time):
+	def placeSegmentsAndReplicas(segmentList, historicalNodeList, queryList, placementStrategy, replicationStrategy, segmentCount, pastHistory, time):
         	placementstrategy = PlacementFactory.createPlacementStrategy(placementStrategy)
         	replicationstrategy = ReplicationFactory.createReplicationStrategy(replicationStrategy)
 		
-		## Placing Segments
-	        placementstrategy.placeSegments(segmentList, historicalNodeList)
-		Coordinator.updateSegmentCount(segmentList, segmentCount)
-
 		## Replicating Segments
 		t0 = dt.datetime.now()
-		(insertlist, removelist) = replicationstrategy.replicateSegments(segmentList, deepStorage, historicalNodeList, queryList, segmentCount, pastHistory, time)
+		(insertlist, removelist) = replicationstrategy.replicateSegments(segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time)
 		t1 = dt.datetime.now()
 		#Utils.printSegmentList(insertlist)
 		#Utils.printSegmentList(removelist)
@@ -33,7 +29,7 @@ class Coordinator(Node):
 		Coordinator.updateSegmentCount(insertlist, segmentCount)
 		Coordinator.removeSegmentCount(removelist, segmentCount)
 
-		numsegmentload = len(insertlist) + len(segmentList)
+		numsegmentload = len(insertlist)
 		computetime = float((t1 - t0).total_seconds() * 1000)
 
 		return (numsegmentload, computetime)

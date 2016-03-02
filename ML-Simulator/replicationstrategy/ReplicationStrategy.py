@@ -5,7 +5,7 @@ from Queue import PriorityQueue
 
 class Fixed(object):
     REPLICATION_FACTOR = 2
-    def replicateSegments(self, segmentList, deepStorage, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
         insertlist = list()
         for segment in segmentList:
             if segmentCount[segment] <= 1:
@@ -19,7 +19,7 @@ class Tiered(object):
     COLD_TIER_REPLICATION = 1
     HOT_TIER_THRESHOLD = 300
     COLD_TIER_THRESHOLD = 800
-    def replicateSegments(self, segmentList, deepStorage, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
         insertlist = list()
         removelist = list()
 
@@ -27,8 +27,6 @@ class Tiered(object):
             if segmentCount[segment] < Tiered.HOT_TIER_REPLICATION:
                 for _ in xrange(0, Tiered.HOT_TIER_REPLICATION - segmentCount[segment]):
                     insertlist.append(segment)
-            else:
-                assert True
 
         for segment in segmentCount.iterkeys():
             if segment not in segmentList:
@@ -42,42 +40,40 @@ class Tiered(object):
                         for _ in xrange(0, segmentCount[segment] - Tiered.COLD_TIER_REPLICATION):
                             removelist.append(segment)
 
-        segmenttimecount = Counter()
+        querysegmentcount = Counter()
 	for query in queryList:
-	    segmenttimecount += query.getSegmentTimeCount()
+	    querysegmentcount += query.getSegmentList()
 
-        for querytime in segmenttimecount.iterkeys():
-            removed = querytime <= (time - Tiered.COLD_TIER_THRESHOLD)
-            segment = deepStorage[querytime - 1]
-	    assert segment.getTime() == querytime
+        for segment in querysegmentcount.iterkeys():
+            removed = segment.getTime() <= (time - Tiered.COLD_TIER_THRESHOLD)
             if removed == True:
                 if segment not in insertlist and segmentCount[segment] == 0:
                     for _ in xrange(0, Tiered.COLD_TIER_REPLICATION):
                         insertlist.append(segment)
-                elif segment in removelist and segmentCount[segment] == Tiered.COLD_TIER_REPLICATION:
-                    for _ in xrange(0, Tiered.COLD_TIER_REPLICATION):
+                elif segment in removelist and segmentCount[segment] > 0:
+                    for _ in xrange(0, segmentCount[segment]):
                         removelist.remove(segment)
 
         return (insertlist, removelist)
 
 class Adaptive(object):
     HISTORY_COUNT = 5
-    def replicateSegments(self, segmentList, deepStorage, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
         insertlist = list()
         removelist = list()
 
-        segmenttimecount = Counter()
+        querysegmentcount = Counter()
 	for query in queryList:
-	    segmenttimecount += query.getSegmentTimeCount()
+	    querysegmentcount += query.getSegmentList()
 
-	segmentunion = segmenttimecount.keys()
+	segmentunion = querysegmentcount.keys()
 	for historycount in pastHistory:
 	    segmentunion = list(set().union(segmentunion, historycount.keys()))
 	
 	segmentpopularitymap = dict()
 	for segment in segmentunion:
 	    count = 0
-	    value = float(segmenttimecount[segment]) / pow(2, count)
+	    value = float(querysegmentcount[segment]) / pow(2, count)
 	    count += 1
 
 	    for historycount in reversed(pastHistory):
@@ -86,16 +82,15 @@ class Adaptive(object):
 
             segmentpopularitymap[segment] = value
 
-	pastHistory.append(segmenttimecount)
+	pastHistory.append(querysegmentcount)
         if (len(pastHistory) > Adaptive.HISTORY_COUNT):
 	    pastHistory.pop(0)
 
+        print segmentpopularitymap
         totalqueriedsegments = sum(segmentpopularitymap.values())
-        for time in segmentpopularitymap.iterkeys():
-            segment = deepStorage[time - 1]
+        for segment in segmentpopularitymap.iterkeys():
             currentsegmentcount = segmentCount[segment]
-            expectedsegmentcount = math.ceil(segmentpopularitymap[time] * len(historicalNodeList) / float(totalqueriedsegments))
-            expectedsegmentcount = min(len(historicalNodeList), expectedsegmentcount)
+            expectedsegmentcount = math.ceil(segmentpopularitymap[segment] * len(historicalNodeList) / float(totalqueriedsegments))
 
             if (expectedsegmentcount == 0):
                 for _ in xrange(0, currentsegmentcount):
@@ -108,7 +103,7 @@ class Adaptive(object):
                     insertlist.append(segment)
 
         for segment in segmentCount.iterkeys():
-            if segment.getTime() not in segmentpopularitymap.keys() and segmentCount[segment] > 0:
+            if segment not in segmentpopularitymap.keys() and segmentCount[segment] > 0:
                 for _ in xrange(0, segmentCount[segment]):
                     removelist.append(segment)
 
@@ -116,22 +111,22 @@ class Adaptive(object):
 
 class BestFit(object):
     HISTORY_COUNT = 5
-    def replicateSegments(self, segmentList, deepStorage, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
         insertlist = list()
         removelist = list()
 
-        segmenttimecount = Counter()
+        querysegmentcount = Counter()
 	for query in queryList:
-	    segmenttimecount += query.getSegmentTimeCount()
+	    querysegmentcount += query.getSegmentList()
 
-	segmentunion = segmenttimecount.keys()
+	segmentunion = querysegmentcount.keys()
 	for historycount in pastHistory:
 	    segmentunion = list(set().union(segmentunion, historycount.keys()))
 	
 	segmentpopularitymap = dict()
 	for segment in segmentunion:
 	    count = 0
-	    value = float(segmenttimecount[segment]) / pow(2, count)
+	    value = float(querysegmentcount[segment]) / pow(2, count)
 	    count += 1
 
 	    for historycount in reversed(pastHistory):
@@ -140,7 +135,7 @@ class BestFit(object):
 
             segmentpopularitymap[segment] = math.ceil(value)
 
-	pastHistory.append(segmenttimecount)
+	pastHistory.append(querysegmentcount)
         if (len(pastHistory) > BestFit.HISTORY_COUNT):
 	    pastHistory.pop(0)
 
@@ -158,7 +153,7 @@ class BestFit(object):
         while not maxheap.empty():
             (val, key) = maxheap.get()
             valleft = self.bestfit(val, nodecapacities)
-            expectedCount[deepStorage[key - 1]] += 1
+            expectedCount[key] += 1
             if (valleft > 0):
                 maxheap.put((valleft, key))
 
@@ -173,7 +168,7 @@ class BestFit(object):
                     insertlist.append(segment)
 
         for segment in segmentCount.iterkeys():
-            if segment.getTime() not in segmentpopularitymap.keys() and segmentCount[segment] > 0:
+            if segment not in segmentpopularitymap.keys() and segmentCount[segment] > 0:
                 for _ in xrange(0, segmentCount[segment]):
                     removelist.append(segment)
 

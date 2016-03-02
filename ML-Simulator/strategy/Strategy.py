@@ -2,7 +2,6 @@ import os,sys
 sys.path.append(os.path.abspath('node'))
 sys.path.append(os.path.abspath('utilities'))
 from collections import Counter
-import copy
 
 from HistoricalNode import HistoricalNode
 from Coordinator import Coordinator
@@ -42,9 +41,9 @@ class Strategy(object):
 			if node.computeEndsAt() >= maxtime:
 				maxtime = node.computeEndsAt()
 
-				replicalist += node.getSegmentCounts()
+			replicalist += node.getSegmentCounts()
 
-			totalreplicas = sum(replicalist.values())
+		totalreplicas = sum(replicalist.values())
 
 		if querysegmentcount > -1:
 			self.log(time, "Overall Segment Throughput: %f" % (float(querysegmentcount) / float(maxtime)))
@@ -65,20 +64,16 @@ class Strategy(object):
 		for node in historicalNodeList:
 			loadedsegments += node.getSegmentCounts()
 	
-		uniquetimes = list()
-		for segment in loadedsegments.keys():
-			uniquetimes.append(segment.getTime())
-	
 		for candidate in candidateList:
 			placed = True
-			for time in candidate.segmentTimeList:
-				if time not in uniquetimes:
+			for segment in candidate.getSegmentList().keys():
+				if segment not in loadedsegments:
 					placed = False
 					break
 			if placed == False:
 				querylist.append(candidate)
 			else:
-				routinglist.append(copy.copy(candidate))
+				routinglist.append(candidate)
 	
 		return (routinglist, querylist)
 
@@ -115,9 +110,9 @@ class Strategy(object):
 
 		return len(self.queryList) == 0
 
-	def placeSegments(self, segmentList, deepStorage, time):
+	def placeSegments(self, segmentList, time):
 		self.log(time, "Placing Segments")
-		(numloads, computetime) = Coordinator.placeSegmentsAndReplicas(segmentList, deepStorage, self.historicalNodeList, self.queryList, self.placementStrategy, self.replicationStrategy, self.segmentReplicaCount, self.pastHistory, time)
+		(numloads, computetime) = Coordinator.placeSegmentsAndReplicas(segmentList, self.historicalNodeList, self.queryList, self.placementStrategy, self.replicationStrategy, self.segmentReplicaCount, self.pastHistory, time)
 		self.numsegmentloads += numloads
 		self.totalcomputetime += computetime
 		Utils.printSegmentPlacement(self.historicalNodeList)

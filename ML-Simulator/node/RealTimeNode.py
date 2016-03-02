@@ -6,8 +6,8 @@ from SegmentGenerator import SegmentGenerator
 
 class RealTimeNode(Node):
 	@staticmethod
-	def generateSegments(segmentRunningCount, segmentSize):
-		segmentlist = SegmentGenerator.populate(segmentRunningCount, segmentSize)
+	def generateSegments(time, segmentRunningCount, numSegments):
+		segmentlist = SegmentGenerator.populate(time, segmentRunningCount, numSegments)
 		return segmentlist
 
 	@staticmethod

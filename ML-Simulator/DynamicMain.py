@@ -36,6 +36,7 @@ def createDynamicStrategyCombinations(historicalNodeCount):
     placementstrategy = 'druidcostbased'
     routingstrategy = 'chooseleastloaded'
     for replicationstrategy in ['fixed', 'tiered', 'adaptive', 'bestfit-d']:
+    #for replicationstrategy in ['adaptive']:
         strategylist.append(Strategy(historicalNodeCount, placementstrategy, replicationstrategy, routingstrategy))
 
     return strategylist
@@ -47,16 +48,25 @@ config.printConfig()
 
 segmentcount = config.getSegmentCount()
 querycount = config.getQueryCount()
+historicalnodecount = config.getHistoricalNodeCount()
+segmentsperinterval = 1
+coordinatorinterval = 10
+
 querysegmentdistribution = config.getQuerySegmentDistribution()
 querysizedistribution = config.getQuerySizeDistribution()
 queryminsize = config.getQueryMinSize()
 querymaxsize = config.getQueryMaxSize()
-queryperinterval = config.getQueryPerInterval()
-historicalnodecount = config.getHistoricalNodeCount()
+
 changequerydistribution = config.getChangeSegmentDistribution()
+newquerysegmentdistribution = "uniform"
+
 burstyquery = config.getBurstyQuery()
 burstyquerymultiplier = config.getBurstyQueryMultiplier()
 burstyqueryinterval = config.getBurstyQueryInterval()
+
+burstysegment = config.getBurstySegment()
+burstysegmentmultiplier = config.getBurstySegmentMultiplier()
+burstysegmentinterval = config.getBurstySegmentInterval()
 
 ######### DYNAMIC SIMULATION #############
 print "Dynamic Simulation"
@@ -65,22 +75,19 @@ print "Dynamic Simulation"
 print "Creating Strategy Combinations"
 dynamicstrategies = createDynamicStrategyCombinations(historicalnodecount)
 
-deepstorage = list()
+deepstorage = dict()
 segmentlist = list()
 querylist = list()
 allquerylist = list()
-totaltime = segmentcount
-segmentsperinterval = 1
-coordinatorinterval = 10
 segmentrunningcount = 0
+
+totaltime = segmentcount / segmentsperinterval
 warmuptime = coordinatorinterval
 residualtime = totaltime - warmuptime
 queryperinterval = int(math.ceil(float(querycount) / residualtime))
 totalqueries = queryperinterval * residualtime
 printstatinterval = int(math.ceil(float(totaltime) / 100))
-
-newquerysegmentdistribution="uniform"
-halfwaypoint=totaltime/2
+changedistributionat = totaltime/2
 
 print("Total Time: %d" % totaltime)
 print("Query Per Interval: %d" % queryperinterval)
@@ -89,29 +96,32 @@ print("Total Queries: %d" % totalqueries)
 #### RUN Phase ####
 for time in xrange(1,totaltime+1):
 
-    if changequerydistribution == "true" and time == halfwaypoint:
-        querysegmentdistribution=newquerysegmentdistribution
-        print "Changing Distribution"
     #Generating Segments indexed starting from 1
     print "Generating Segments and adding to deep storage"
-    newsegments = RealTimeNode.generateSegments(segmentrunningcount+1, segmentsperinterval)
+    numsegments = segmentsperinterval
+    if burstysegment == True and time % burstysegmentinterval == 0:
+        numsegments *= burstysegmentmultiplier
+
+    newsegments = RealTimeNode.generateSegments(time, segmentrunningcount+1, numsegments)
     RealTimeNode.printlist(newsegments)
     segmentlist.extend(newsegments)
-    deepstorage.extend(newsegments)
-    Utils.printSegmentList(deepstorage)
-    segmentrunningcount += 1
+    deepstorage[time] = newsegments
+    segmentrunningcount += segmentsperinterval
 
     if time >= warmuptime:
         #Generating Queries
         print "Generating Queries"
-        maxquerysize = min(segmentrunningcount, querymaxsize)
-        minquerysize = min(queryminsize, maxquerysize)
-        numqueries = queryperinterval;
-        if burstyquery == "true":
-            if time%burstyqueryinterval == 0:
-                numqueries = numqueries * burstyquerymultiplier
+        if changequerydistribution == True and time == changedistributionat:
+            querysegmentdistribution=newquerysegmentdistribution
         
-        newquerylist = QueryGenerator.generateQueries(time, numqueries, segmentrunningcount, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minquerysize, maxquerysize, DistributionFactory.createSizeDistribution(querysizedistribution));
+        maxqueryperiod = min(time, querymaxsize)
+        minqueryperiod = min(queryminsize, maxqueryperiod)
+
+        numqueries = queryperinterval;
+        if burstyquery == True and time % burstyqueryinterval == 0:
+            numqueries *= burstyquerymultiplier
+        
+        newquerylist = QueryGenerator.generateQueries(time, numqueries, deepstorage, DistributionFactory.createSegmentDistribution(querysegmentdistribution), minqueryperiod, maxqueryperiod, DistributionFactory.createSizeDistribution(querysizedistribution));
         Utils.printQueryList(newquerylist)
         allquerylist.extend(newquerylist)
 
@@ -122,7 +132,7 @@ for time in xrange(1,totaltime+1):
     #Placing Segments
     if time % coordinatorinterval == 0:
         for strategy in dynamicstrategies:
-            strategy.placeSegments(segmentlist, deepstorage, time)
+            strategy.placeSegments(segmentlist, time)
         segmentlist = []
 
         #Print Statistics
@@ -131,7 +141,7 @@ for time in xrange(1,totaltime+1):
 
 for strategy in dynamicstrategies:
     #Placing Segments
-    strategy.placeSegments(segmentlist, deepstorage, time)
+    strategy.placeSegments(segmentlist, time)
     
     #Routing Queries
     strategy.routeQueries(list(), segmentrunningcount, totaltime)
@@ -161,7 +171,8 @@ for query in allquerylist:
 staticstrategy.routeQueries(allquerylist, segmentrunningcount, 0)
 
 #Placing Segments
-staticstrategy.placeSegments(deepstorage, deepstorage, 0)
+allsegmentlist = [item for sublist in deepstorage.values() for item in sublist]
+staticstrategy.placeSegments(allsegmentlist, 0)
 
 #Routing Queries
 staticstrategy.routeQueries(list(), segmentrunningcount, 0)
