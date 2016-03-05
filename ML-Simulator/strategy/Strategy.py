@@ -110,9 +110,9 @@ class Strategy(object):
 
 		return len(self.queryList) == 0
 
-	def placeSegments(self, segmentList, time):
+	def placeSegments(self, segmentList, time, config):
 		self.log(time, "Placing Segments")
-		(numloads, computetime) = Coordinator.placeSegmentsAndReplicas(segmentList, self.historicalNodeList, self.queryList, self.placementStrategy, self.replicationStrategy, self.segmentReplicaCount, self.pastHistory, time)
+		(numloads, computetime) = Coordinator.placeSegmentsAndReplicas(segmentList, self.historicalNodeList, self.queryList, self.placementStrategy, self.replicationStrategy, self.segmentReplicaCount, self.pastHistory, time, config)
 		self.numsegmentloads += numloads
 		self.totalcomputetime += computetime
 		Utils.printSegmentPlacement(self.historicalNodeList)

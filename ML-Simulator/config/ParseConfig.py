@@ -16,6 +16,10 @@ class ParseConfig:
 		self.burstysegment = "false"
 		self.burstysegmentmultiplier = 50
 		self.burstysegmentinterval = 300
+		self.hottierthreshold = 300
+		self.coldtierthreshold = 800
+		self.adaptivehistorycount = 5
+		self.bestfithistorycount = 5
 
 		if configFilePath is not  None:
 			self.parseConfigFile(configFilePath)
@@ -58,6 +62,14 @@ class ParseConfig:
 					self.burstysegmentmultiplier = int(value)
 				elif key == "burstysegmentinterval":
 					self.burstysegmentinterval = int(value)
+				elif key == "hottierthreshold":
+					self.hottierthreshold = int(value)
+				elif key == "coldtierthreshold":
+					self.coldtierthreshold = int(value)
+				elif key == "adaptivehistorycount":
+					self.adaptivehistorycount = int(value)
+				elif key == "bestfithistorycount":
+					self.bestfithistorycount = int(value)
 
 	def getSegmentCount(self):
 		return self.segmentcount
@@ -100,6 +112,19 @@ class ParseConfig:
 
 	def getBurstySegmentInterval(self):
 		return self.burstysegmentinterval
+
+	def getHotTierThreshold(self):
+		return self.hottierthreshold
+
+	def getColdTierThreshold(self):
+		return self.coldtierthreshold
+
+	def getAdaptiveHistoryCount(self):
+		return self.adaptivehistorycount
+
+	def getBestFitHistoryCount(self):
+		return self.bestfithistorycount
+
 
 	def printConfig(self):
 		print "Config details"
