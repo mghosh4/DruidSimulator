@@ -5,7 +5,7 @@ from Queue import PriorityQueue
 
 class Fixed(object):
     REPLICATION_FACTOR = 2
-    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time, config):
         insertlist = list()
         for segment in segmentList:
             if segmentCount[segment] <= 1:
@@ -17,9 +17,10 @@ class Fixed(object):
 class Tiered(object):
     HOT_TIER_REPLICATION = 2
     COLD_TIER_REPLICATION = 1
-    HOT_TIER_THRESHOLD = 300
-    COLD_TIER_THRESHOLD = 800
-    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time, config):
+        
+        HOT_TIER_THRESHOLD = config.getHotTierThreshold()
+        COLD_TIER_THRESHOLD = config.getColdTierThreshold()
         insertlist = list()
         removelist = list()
 
@@ -30,12 +31,12 @@ class Tiered(object):
 
         for segment in segmentCount.iterkeys():
             if segment not in segmentList:
-                removed = segment.getTime() <= (time - Tiered.COLD_TIER_THRESHOLD)
+                removed = segment.getTime() <= (time - COLD_TIER_THRESHOLD)
                 if removed == True:
                     for _ in xrange(0, segmentCount[segment]):
                         removelist.append(segment)
                 else:
-                    incoldtier = segment.getTime() <= (time - Tiered.HOT_TIER_THRESHOLD)
+                    incoldtier = segment.getTime() <= (time - HOT_TIER_THRESHOLD)
                     if incoldtier == True and segmentCount[segment] > Tiered.COLD_TIER_REPLICATION:
                         for _ in xrange(0, segmentCount[segment] - Tiered.COLD_TIER_REPLICATION):
                             removelist.append(segment)
@@ -45,7 +46,7 @@ class Tiered(object):
 	    querysegmentcount += query.getSegmentList()
 
         for segment in querysegmentcount.iterkeys():
-            removed = segment.getTime() <= (time - Tiered.COLD_TIER_THRESHOLD)
+            removed = segment.getTime() <= (time - COLD_TIER_THRESHOLD)
             if removed == True:
                 if segment not in insertlist and segmentCount[segment] == 0:
                     for _ in xrange(0, Tiered.COLD_TIER_REPLICATION):
@@ -57,8 +58,8 @@ class Tiered(object):
         return (insertlist, removelist)
 
 class Adaptive(object):
-    HISTORY_COUNT = 5
-    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time, config):
+        HISTORY_COUNT = config.getAdaptiveHistoryCount()
         insertlist = list()
         removelist = list()
 
@@ -83,7 +84,7 @@ class Adaptive(object):
             segmentpopularitymap[segment] = value
 
 	pastHistory.append(querysegmentcount)
-        if (len(pastHistory) > Adaptive.HISTORY_COUNT):
+        if (len(pastHistory) > HISTORY_COUNT):
 	    pastHistory.pop(0)
 
         print segmentpopularitymap
@@ -110,8 +111,8 @@ class Adaptive(object):
         return (insertlist, removelist)
 
 class BestFit(object):
-    HISTORY_COUNT = 5
-    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time):
+    def replicateSegments(self, segmentList, historicalNodeList, queryList, segmentCount, pastHistory, time, config):
+        HISTORY_COUNT = config.getBestFitHistoryCount()
         insertlist = list()
         removelist = list()
 
@@ -136,7 +137,7 @@ class BestFit(object):
             segmentpopularitymap[segment] = math.ceil(value)
 
 	pastHistory.append(querysegmentcount)
-        if (len(pastHistory) > BestFit.HISTORY_COUNT):
+        if (len(pastHistory) > HISTORY_COUNT):
 	    pastHistory.pop(0)
 
         totalqueriedsegments = sum(segmentpopularitymap.values())

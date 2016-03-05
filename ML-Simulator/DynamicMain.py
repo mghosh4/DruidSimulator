@@ -135,7 +135,7 @@ for time in xrange(1,totaltime+1):
     #Placing Segments
     if time % coordinatorinterval == 0:
         for strategy in dynamicstrategies:
-            strategy.placeSegments(segmentlist, time)
+            strategy.placeSegments(segmentlist, time, config)
         segmentlist = []
 
         #Print Statistics
@@ -144,7 +144,7 @@ for time in xrange(1,totaltime+1):
 
 for strategy in dynamicstrategies:
     #Placing Segments
-    strategy.placeSegments(segmentlist, time)
+    strategy.placeSegments(segmentlist, time, config)
     
     #Routing Queries
     strategy.routeQueries(list(), segmentrunningcount, totaltime)
@@ -175,7 +175,7 @@ staticstrategy.routeQueries(allquerylist, segmentrunningcount, 0)
 
 #Placing Segments
 allsegmentlist = [item for sublist in deepstorage.values() for item in sublist]
-staticstrategy.placeSegments(allsegmentlist, 0)
+staticstrategy.placeSegments(allsegmentlist, 0, config)
 
 #Routing Queries
 staticstrategy.routeQueries(list(), segmentrunningcount, 0)
