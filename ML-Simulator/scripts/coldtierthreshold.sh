@@ -3,10 +3,10 @@
 source "$1"
 mkdir -p "$2"
 
-for historicalnode in ${historicalnodecount[@]}
+for threshold in ${coldtierthreshold[@]}
 do
-		echo "Running experiment for historicalnode: " $historicalnode
-		LOG_PATH="$2"/"$historicalnode"
+		echo "Running experiment for coldtierthreshold: " $threshold
+		LOG_PATH="$2"/"$threshold
 		echo $LOG_PATH
 		mkdir -p $LOG_PATH
 		RUNLOG_PATH="$LOG_PATH"/run.log
@@ -18,7 +18,7 @@ do
 			echo "querysizedistribution=${sizedistribution[0]}"
 			echo "queryminsize=$queryminsize"
 			echo "querymaxsize=$querymaxsize"
-			echo "historicalnodecount=$historicalnode"
+			echo "historicalnodecount=${historicalnodecount[0]}"
 			echo "changesegmentdistribution=$changesegmentdistribution"
 			echo "burstyquery=$burstyquery"
 			echo "burstyquerymultiplier=$burstyquerymultiplier"
@@ -27,7 +27,7 @@ do
 			echo "burstysegmentmultiplier=$burstysegmentmultiplier"
 			echo "burstysegmentinterval=$burstysegmentinterval"
 			echo "hottierthreshold=${hottierthreshold[0]}"
-			echo "coldtierthreshold=${coldtierthreshold[0]}"
+			echo "coldtierthreshold=$threshold"
 			echo "adaptivehistorycount=${adaptivehistorycount[0]}"
 			echo "bestfithistorycount=${bestfithistorycount[0]}"
 		} > "$CONF_PATH"
