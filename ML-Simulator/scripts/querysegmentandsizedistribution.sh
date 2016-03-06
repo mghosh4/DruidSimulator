@@ -36,14 +36,8 @@ do
 
 		python DynamicMain.py "$CONF_PATH" > "$RUNLOG_PATH"
 
-		bash scripts/grepdata.sh Replicas $RUNLOG_PATH > "$LOG_PATH"/replicas.log
-		bash scripts/grepdata.sh Throughput $RUNLOG_PATH | tail -1 > "$LOG_PATH"/throughput.log
-		bash scripts/grepdata.sh Factor $RUNLOG_PATH > "$LOG_PATH"/factor.log
-		bash scripts/grepdata.sh Loads $RUNLOG_PATH | tail -1 > "$LOG_PATH"/loads.log
-		bash scripts/grepdata.sh Completion $RUNLOG_PATH | tail -1 > "$LOG_PATH"/completion.log
+		bash scripts/extractandplot.sh $RUNLOG_PATH $LOG_PATH
 	done
 done
-
-wait
 
 echo "Completed"
