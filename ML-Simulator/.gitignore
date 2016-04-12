@@ -5,6 +5,7 @@
 */.pyc
 .pyc
 *.log
+*.png
 logs/*
 Logs/*
 experiments/*

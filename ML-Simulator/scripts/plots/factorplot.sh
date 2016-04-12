@@ -17,7 +17,8 @@ set xrange [0:1000]
 set yrange [0:3]
 set key top left
 plot    "$1" using 1:2 title 'Fixed' with linespoints ls 1, \
-        '' using 1:3 title 'Tiered' with linespoints ls 2, \
-        '' using 1:4 title 'Adaptive' with linespoints ls 3, \
-        '' using 1:5 title 'Best Fit' with linespoints ls 5
+	'' using 1:3 title 'Tiered (HT:300 WT:800)' with linespoints ls 2, \
+	'' using 1:4 title 'Tiered (HT:100 WT:500)' with linespoints ls 3, \
+        '' using 1:5 title 'Adaptive' with linespoints ls 4, \
+        '' using 1:6 title 'Best Fit' with linespoints ls 5
 EOF
